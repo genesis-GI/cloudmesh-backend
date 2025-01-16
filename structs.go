@@ -12,9 +12,12 @@ type account struct{
 }
 
 type loginRequest struct{
-
+	email string
+	password string
 }
 
 type registerRequest struct{
-
+	email string
+	username string
+	password string
 }

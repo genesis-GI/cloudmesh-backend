@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Genesis -> Download -> Launcher</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <div id="notification" class="hidden"></div>
+    <h1>Download the Genesis Launcher</h1>
+    
+    <h1> </h1>
+    <button onclick="download()">Download</button>
+    <button onclick="window.location.href='/'">Home</button>
+</body>
+<script>
+    function download(){
+        //window.location.href='/';    -> Launcher download link 
+        showNotification("Launcher comming soon!", 'warning')
+    }
+
+    const notification = document.getElementById('notification');
+        function showNotification(message, type) {
+            notification.textContent = message;
+            notification.className = `notification ${type}`;
+            setTimeout(() => {
+                notification.className = "notification hidden";
+            }, 3000);
+        }
+</script>
+</html>
