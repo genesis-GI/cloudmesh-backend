@@ -5,17 +5,15 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"strings"
 	"time"
+
+	"regexp"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"golang.org/x/crypto/bcrypt"
-
-)
-
-import (
-	"regexp"
 )
 
 var accounts *mongo.Collection
@@ -41,7 +39,17 @@ func CheckPasswordHash(password, hash string) bool {
     return err == nil
 }
 
+func isValidEmail(email string) bool {
+	emailRegex := `^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`
+	re := regexp.MustCompile(emailRegex)
+	return re.MatchString(email)
+}
+
 func findByEmail(email string) (bool, string) {
+	if !isValidEmail(email) {
+		log.Println("Invalid email format")
+		return false, ""
+	}
 	filter := bson.M{"email": email}
 
 	var result bson.M
@@ -63,31 +71,37 @@ func findByEmail(email string) (bool, string) {
 }
 
 
-func isValidEmail(email string) bool {
-	re := regexp.MustCompile(`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`)
-	return re.MatchString(email)
-}
-
-func login(req LoginRequest) (bool, string){
+func login(req LoginRequest) (bool, string) {
+	// Check if email is in a valid format -> No 'SQL' injection
 	if !isValidEmail(req.Email) {
-		return false, "Invalid email format"
+		return false, "Invalid email or password"
 	}
+	req.Email = strings.TrimSpace(req.Email)
+
+
 	var account Account
 	err := accounts.FindOne(context.TODO(), bson.M{"email": req.Email}).Decode(&account)
 
-
-	if err == mongo.ErrNoDocuments{
-		return false, "Account not found! Please register first"
-	} else if err != nil{
-		return false, "Error: " + err.Error()
+	// Password checks
+	if err == mongo.ErrNoDocuments {
+		log.Printf("Login attempt for non-existent email: %s\n", req.Email)
+		return false, "Invalid email or password"
+	} else if err != nil {
+		log.Printf("Database error during login for email %s: %v\n", req.Email, err)
+		return false, "An error occurred. Please try again later."
 	}
 
-
+	// Check if passwords match
 	if !CheckPasswordHash(req.Password, account.Password) {
+
+		log.Printf("Invalid password attempt for email: %s\n", req.Email)
 		return false, "Invalid email or password"
 	}
+
+	// Login successful
 	return true, "Login successful!"
 }
+
 
 
 func register(email, username, password string) (bool, string){
