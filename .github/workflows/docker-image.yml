@@ -7,8 +7,8 @@ on:
     branches: [ "main" ]
 
 jobs:
-  name: build docker image
   build:
+    name: docker image build
 
     runs-on: ubuntu-latest
 
