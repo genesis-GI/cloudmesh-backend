@@ -37,7 +37,7 @@ func main() {
 	r.POST("/login/:email/:password", func(c *gin.Context){
 		email := c.Param("email")
 		password := c.Param("password")
-		
+
 		loginReq := LoginRequest {
 			Email: email,
 			Password: password,
