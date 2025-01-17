@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-
 	"github.com/gin-gonic/gin"
 )
 
@@ -11,13 +10,12 @@ import (
 func main() { 
 	r := gin.Default()
 	gin.SetMode(gin.ReleaseMode)
-	r.Static("/public/css", ".public/css")
-
 	r.GET("/css/styles.css", func(c *gin.Context) {
 		c.File("public/css/styles.css")
 	})
 
 
+	
 	r.GET("/", func(c *gin.Context){
 		indexHandler(c)
 	})
@@ -36,7 +34,45 @@ func main() {
 	})
 
 
-	
+	r.POST("/login/:email/:password", func(c *gin.Context){
+		email := c.Param("email")
+		password := c.Param("password")
+
+
+		// ******* TEMPORARY TEST *******
+		hashedPassword, err := HashPassword("test")
+		if err != nil {
+			fmt.Println("Error:",err)
+		}
+		// ******* TEMPORARY TEST *******
+
+		
+		fmt.Println("Search db for email:",email)
+		// Now, compare the password of the found document with the checkpassword function  (replace hashedpassword with the thing from the document)
+
+		match := CheckPasswordHash(password, hashedPassword)
+		
+
+		if match{
+			c.Status(200)
+		}else{
+			c.Status(500)
+		}
+		
+	})
+
+	r.POST("/register/:email/:username/:password", func(c *gin.Context){
+		email := c.Param("email")
+		username := c.Param("username")
+		password := c.Param("password")
+		registerReq := registerRequest{email: email, username: username, password: password}
+		
+
+		fmt.Println(registerReq)
+	})
+
+
+
 
 	if(gin.Mode() == gin.DebugMode){
 		fmt.Println("Running in debug mode")
