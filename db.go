@@ -14,6 +14,10 @@ import (
 
 )
 
+import (
+	"regexp"
+)
+
 var accounts *mongo.Collection
 
 func initDB(){
@@ -59,9 +63,16 @@ func findByEmail(email string) (bool, string) {
 }
 
 
-
+func isValidEmail(email string) bool {
+	// Regular expression for validating email format
+	re := regexp.MustCompile(`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`)
+	return re.MatchString(email)
+}
 
 func login(req LoginRequest) (bool, string){
+	if !isValidEmail(req.Email) {
+		return false, "Invalid email format"
+	}
 	var account Account
 	err := accounts.FindOne(context.TODO(), bson.M{"email": req.Email}).Decode(&account)
 
