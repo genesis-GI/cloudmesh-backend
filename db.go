@@ -80,7 +80,8 @@ func login(req LoginRequest) (bool, string) {
 
 
 	var account Account
-	err := accounts.FindOne(context.TODO(), bson.M{"email": req.Email}).Decode(&account)
+	filter := bson.D{{Key: "email", Value: req.Email}}
+	err := accounts.FindOne(context.TODO(), filter).Decode(&account)
 
 	// Password checks
 	if err == mongo.ErrNoDocuments {
