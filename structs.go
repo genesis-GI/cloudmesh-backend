@@ -1,23 +1,23 @@
 package main
 
+import "time"
 
-type account struct{
-	username string
-	email string
-	password string
-	admin bool
-	wave int
-	ingame map[string]interface{}
-	playerLocation  map[string]interface{}
+type Account struct {
+	Username  string    `bson:"username" json:"username"`
+	Email     string    `bson:"email" json:"email"`
+	Password  string    `bson:"password" json:"-"`
+	Admin     bool      `bson:"admin" json:"admin"`
+	Wave      int       `bson:"wave" json:"wave"`
+	CreatedAt time.Time `bson:"created_at" json:"created_at"`
 }
 
-type loginRequest struct{
-	email string
-	password string
+type LoginRequest struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
 }
 
-type registerRequest struct{
-	email string
-	username string
-	password string
+type RegisterRequest struct {
+	Email    string `json:"email"`
+	Username string `json:"username"`
+	Password string `json:"password"`
 }
