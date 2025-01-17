@@ -98,8 +98,8 @@ func register(email, username, password string) (bool, string){
 	}
 
 	hashedPW, err := HashPassword(password)
-	fmt.Println("password entered:",password)
-	fmt.Println("Hashed pw:", hashedPW)
+	// fmt.Println("password entered:",password)
+	// fmt.Println("Hashed pw:", hashedPW)
 	if err != nil{
 		return false, "Error: "+err.Error()
 	}
