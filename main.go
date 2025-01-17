@@ -37,38 +37,33 @@ func main() {
 	r.POST("/login/:email/:password", func(c *gin.Context){
 		email := c.Param("email")
 		password := c.Param("password")
-
-
-		// ******* TEMPORARY TEST *******
-		hashedPassword, err := HashPassword("test")
-		if err != nil {
-			fmt.Println("Error:",err)
+		
+		loginReq := LoginRequest {
+			Email: email,
+			Password: password,
 		}
-		// ******* TEMPORARY TEST *******
 
-		
-		fmt.Println("Search db for email:",email)
-		// Now, compare the password of the found document with the checkpassword function  (replace hashedpassword with the thing from the document)
+		success, errMSG := login(loginReq)
 
-		match := CheckPasswordHash(password, hashedPassword)
-		
-
-		if match{
-			c.Status(200)
+		if !success {
+			c.String(500, errMSG)
 		}else{
-			c.Status(500)
+			c.String(200, errMSG)
 		}
-		
+
 	})
 
 	r.POST("/register/:email/:username/:password", func(c *gin.Context){
 		email := c.Param("email")
 		username := c.Param("username")
 		password := c.Param("password")
-		registerReq := registerRequest{email: email, username: username, password: password}
-		
+		success, msg := register(email, username, password)
 
-		fmt.Println(registerReq)
+		if !success{
+			c.String(500,msg)
+		}else{
+			c.String(201, msg)
+		}
 	})
 
 
@@ -77,6 +72,7 @@ func main() {
 	if(gin.Mode() == gin.DebugMode){
 		fmt.Println("Running in debug mode")
 	}
+	initDB()
 	fmt.Println("Server running on http://localhost:8088")
 	r.Run(":8088")
 }
