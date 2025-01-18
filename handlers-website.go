@@ -13,9 +13,11 @@ func launcherDownloadHandler(c *gin.Context){
 }
 
 func loginWebsiteHandler(c *gin.Context){
-	c.File("public/html/login.html")
+	c.String(200, "Comming soon!")
+	//c.File("public/html/login.html")
 }
 
 func regsiterWebsiteHandler(c *gin.Context){
-	c.File("public/html/register.html")
+	c.String(200, "Comming soon!")
+	//c.File("public/html/register.html")
 }

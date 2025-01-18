@@ -8,8 +8,8 @@ import (
 
 
 func main() { 
-	r := gin.Default()
 	gin.SetMode(gin.ReleaseMode)
+	r := gin.Default()
 	r.GET("/css/styles.css", func(c *gin.Context) {
 		c.File("public/css/styles.css")
 	})
@@ -72,7 +72,10 @@ func main() {
 	if(gin.Mode() == gin.DebugMode){
 		fmt.Println("Running in debug mode")
 	}
-	initDB()
+	err := initDB()
+	if err != nil{
+		panic(err)
+	}
 	fmt.Println("Server running on http://localhost:8088")
 	r.Run(":8088")
 }
