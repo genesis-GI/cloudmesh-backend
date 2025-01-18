@@ -10,6 +10,7 @@ import (
 
 	"regexp"
 
+	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -19,7 +20,15 @@ import (
 var accounts *mongo.Collection
 
 func initDB() error {
-	clientOptions := options.Client().ApplyURI("mongodb://mongodb:27017")
+	
+	var clientOptions *options.ClientOptions
+
+	if gin.Mode() == gin.ReleaseMode{
+		clientOptions = options.Client().ApplyURI("mongodb://mongodb:27017")
+	}else{
+		clientOptions = options.Client().ApplyURI("mongodb://mongodb:27017")
+	}
+
 	client, err := mongo.Connect(context.TODO(), clientOptions)
 	if err != nil {
 		return fmt.Errorf("failed to connect to the database: %w", err)
