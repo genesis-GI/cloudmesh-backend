@@ -19,7 +19,7 @@ import (
 var accounts *mongo.Collection
 
 func initDB() error {
-	clientOptions := options.Client().ApplyURI("mongodb://localhost:27017")
+	clientOptions := options.Client().ApplyURI("mongodb://mongodb:27017")
 	client, err := mongo.Connect(context.TODO(), clientOptions)
 	if err != nil {
 		return fmt.Errorf("failed to connect to the database: %w", err)
