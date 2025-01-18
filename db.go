@@ -23,6 +23,7 @@ func initDB(){
 	client, err := mongo.Connect(context.TODO(), clientOptions)
 	if err != nil {
 		log.Fatal(err)
+		panic(err)
 	}
 	accounts = client.Database("genesis").Collection("accounts")
 	fmt.Println("DB initiated successfully")
