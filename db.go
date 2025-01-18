@@ -20,13 +20,13 @@ import (
 var accounts *mongo.Collection
 
 func initDB() error {
-	
+
 	var clientOptions *options.ClientOptions
 
 	if gin.Mode() == gin.ReleaseMode{
 		clientOptions = options.Client().ApplyURI("mongodb://mongodb:27017")
 	}else{
-		clientOptions = options.Client().ApplyURI("mongodb://mongodb:27017")
+		clientOptions = options.Client().ApplyURI("mongodb://localhost:27017")
 	}
 
 	client, err := mongo.Connect(context.TODO(), clientOptions)
