@@ -14,6 +14,10 @@ func main() {
 		c.File("public/css/styles.css")
 	})
 
+	r.GET("/favicon.ico", func(c * gin.Context){
+		c.String(200, "Comming soon!")
+	})
+
 
 	
 	r.GET("/", func(c *gin.Context){
