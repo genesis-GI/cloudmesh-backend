@@ -9,6 +9,8 @@ import (
 	"time"
 
 	"regexp"
+
+	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -20,7 +22,12 @@ var accounts *mongo.Collection
 func initDB() error {
 
 	var clientOptions *options.ClientOptions
-	clientOptions = options.Client().ApplyURI("mongodb://localhost:27017")
+	if gin.ReleaseMode == gin.DebugMode {
+		clientOptions = options.Client().ApplyURI("mongodb://localhost:27017")
+	}else{
+		clientOptions = options.Client().ApplyURI("mongodb://81.10.229.31:27017")
+	}
+	
 
 	client, err := mongo.Connect(context.TODO(), clientOptions)
 	if err != nil {
