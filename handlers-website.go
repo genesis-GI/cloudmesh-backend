@@ -19,3 +19,6 @@ func loginWebsiteHandler(c *gin.Context){
 func regsiterWebsiteHandler(c *gin.Context){
 	c.File("public/html/register.html")
 }
+func newshandler(c *gin.Context){
+	c.File("public/html/news.html")
+}

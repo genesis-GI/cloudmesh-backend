@@ -34,8 +34,10 @@ func main() {
 	})
 
 	r.GET("/news", func(c *gin.Context){
-		c.File("public/html/news.html")
+		newshandler(c)
 	})
+
+	
 
 
 	r.POST("/login/:email/:password", func(c *gin.Context){
