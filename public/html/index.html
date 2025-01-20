@@ -4,8 +4,39 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <link rel="stylesheet" href="/css/styles.css">
+
 </head>
+
 <body>
+
+    <ul>
+        <li><a href='/download/launcher'>Download</a></li>
+        <li><a href="#news">News</a></li>
+        <li><a href="register.html">Login</a></li>
+        <li><a href="login.html">Register</a></li>
+    </ul>
+
+    <h1>Test</h1>
+    <a>test</a>
+    <button> hi </button>
     
+    <a href= ""></a>
+    <button onclick="window.location.href='/download/launcher'">Download</button>
+    <input type="text" id="username" name="username" placeholder="Enter your username" maxlength="50">
+    <div id="notification" class="hidden"></div>
+
 </body>
+<script>
+    const notification = document.getElementById('notification');
+
+    function showNotification(message, type) {
+        notification.textContent = message;
+        notification.className = `notification ${type}`;
+        setTimeout(() => {
+            notification.className = "notification hidden";
+        }, 3000);
+    }
+    showNotification("This website is in Progress", "warning")
+</script>
 </html>
