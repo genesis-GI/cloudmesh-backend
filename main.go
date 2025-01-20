@@ -33,6 +33,10 @@ func main() {
 		regsiterWebsiteHandler(c)
 	})
 
+	r.GET("/news", func(c *gin.Context){
+		c.File("public/html/news.html")
+	})
+
 
 	r.POST("/login/:email/:password", func(c *gin.Context){
 		email := c.Param("email")
