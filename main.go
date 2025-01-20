@@ -72,10 +72,12 @@ func main() {
 	if(gin.Mode() == gin.DebugMode){
 		fmt.Println("Running in debug mode")
 	}
-	err := initDB()
+/* 	err := initDB()
 	if err != nil{
 		panic(err)
-	}
+	} */
+	 fmt.Println("Database is disabled")
+	 
 	fmt.Println("Server running on http://localhost:8088")
 	r.Run(":8088")
 }
