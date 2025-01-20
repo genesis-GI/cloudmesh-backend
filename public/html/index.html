@@ -5,27 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <link rel="stylesheet" href="/css/styles.css">
-
-</head>
-
 <body>
 
     <ul>
+        <li><a href="/">Home</a></li>
         <li><a href='/download/launcher'>Download</a></li>
-        <li><a href="#news">News</a></li>
-        <li><a href="register.html">Login</a></li>
-        <li><a href="login.html">Register</a></li>
+        <li><a href="/news">News</a></li>
+        <li><a href="/login">Login</a></li>
+        <li><a href="/register">Register</a></li>
     </ul>
 
-    <h1>Test</h1>
-    <a>test</a>
-    <button> hi </button>
+    <h1>Welcome to Genesis</h1>
+    <div class="container">
+        <div class="textbox">
+          <a> [ Welcometext ] </a>
+        </div>
+      </div>
     
-    <a href= ""></a>
-    <button onclick="window.location.href='/download/launcher'">Download</button>
-    <input type="text" id="username" name="username" placeholder="Enter your username" maxlength="50">
-    <div id="notification" class="hidden"></div>
-
 </body>
 <script>
     const notification = document.getElementById('notification');
@@ -38,5 +34,7 @@
         }, 3000);
     }
     showNotification("This website is in Progress", "warning")
+    showNotification("Test", "error")
+    showNotification("Test", "succsess")
 </script>
 </html>
