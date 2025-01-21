@@ -37,9 +37,7 @@ func main() {
 
 
 
-
-func main() { 
-	gin.SetMode(gin.DebugMode)
+	r := gin.Default()
 
 	
 	r.GET("/css/styles.css", func(c *gin.Context) {
