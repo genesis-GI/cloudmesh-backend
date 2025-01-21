@@ -1,15 +1,45 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
+	"os"
+	"time"
+
 	"github.com/gin-gonic/gin"
 )
 
+func main() {
+	fmt.Println("Press 'd' and Enter within 5 seconds to enable debug mode...")
+	debugModeCh := make(chan bool)
+	go func() {
+		reader := bufio.NewReader(os.Stdin)
+		input, _ := reader.ReadString('\n')
+		if input == "d\n" || input == "d\r\n" { 
+			debugModeCh <- true
+		} else {
+			debugModeCh <- false
+		}
+	}()
+	select {
+	case enableDebug := <-debugModeCh:
+		if enableDebug {
+			fmt.Println("Debug mode enabled!")
+			gin.SetMode(gin.DebugMode)
+		} else {
+			fmt.Println("Starting in release mode.")
+			gin.SetMode(gin.ReleaseMode)
+		}
+	case <-time.After(5 * time.Second):
+		fmt.Println("Timeout! Starting in release mode.")
+		gin.SetMode(gin.ReleaseMode)
+	}
 
 
-func main() { 
-	gin.SetMode(gin.DebugMode)
+
 	r := gin.Default()
+
+	
 	r.GET("/css/styles.css", func(c *gin.Context) {
 		c.File("public/css/styles.css")
 	})
@@ -55,8 +85,8 @@ func main() {
 	
 
 	if(gin.Mode() == gin.DebugMode){
-		fmt.Println("Running in debug mode")
-		fmt.Println("Database is disabled")
+		fmt.Println("Running in debug mode...")
+		fmt.Println("...Database is disabled")
 	}else{
 		err := initDB()
 		if err != nil{

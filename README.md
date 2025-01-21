@@ -10,7 +10,7 @@ This is the backend for cloudmesh. Websites, acccount system etc.
 
 
 
-## Not working currently, but comming soon!: 
+## This is not working currently, but will soon: 
 To run it locally:
 - Make sure you have git and docker installed.
 - Clone the repository
