@@ -22,12 +22,12 @@ var accounts *mongo.Collection
 func initDB() error {
 
 	var clientOptions *options.ClientOptions
-
-	if gin.Mode() == gin.ReleaseMode{
-		clientOptions = options.Client().ApplyURI("mongodb://mongodb:27017")
-	}else{
+	if gin.ReleaseMode == gin.DebugMode {
 		clientOptions = options.Client().ApplyURI("mongodb://localhost:27017")
+	}else{
+		clientOptions = options.Client().ApplyURI("mongodb://81.10.229.31:27017")
 	}
+	
 
 	client, err := mongo.Connect(context.TODO(), clientOptions)
 	if err != nil {
@@ -129,8 +129,6 @@ func register(email, username, password string) (bool, string){
 	}
 
 	hashedPW, err := HashPassword(password)
-	// fmt.Println("password entered:",password)
-	// fmt.Println("Hashed pw:", hashedPW)
 	if err != nil{
 		return false, "Error: "+err.Error()
 	}

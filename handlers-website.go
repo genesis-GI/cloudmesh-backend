@@ -5,7 +5,7 @@ import(
 )
 
 func indexHandler(c *gin.Context){
-	c.String(200, "comming soon!")
+	c.File("public/html/index.html")
 }
 
 func launcherDownloadHandler(c *gin.Context){
@@ -13,11 +13,12 @@ func launcherDownloadHandler(c *gin.Context){
 }
 
 func loginWebsiteHandler(c *gin.Context){
-	c.String(200, "Comming soon!")
-	//c.File("public/html/login.html")
+	c.File("public/html/login.html")
 }
 
 func regsiterWebsiteHandler(c *gin.Context){
-	c.String(200, "Comming soon!")
-	//c.File("public/html/register.html")
+	c.File("public/html/register.html")
+}
+func newshandler(c *gin.Context){
+	c.File("public/html/news.html")
 }

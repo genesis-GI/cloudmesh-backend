@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="/css/styles.css">
+<body>
+
+    <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href='/download/launcher'>Download</a></li>
+        <li><a href="/news">News</a></li>
+        <li><a href="/login">Login</a></li>
+        <li><a href="/register">Register</a></li>
+    </ul>
+
+    <h1>Welcome to Genesis</h1>
+    <div class="container">
+        <div class="textbox">
+          <a> [ Welcometext ] </a>
+        </div>
+      </div>
+    
+</body>
+<script>
+    const notification = document.getElementById('notification');
+
+    function showNotification(message, type) {
+        notification.textContent = message;
+        notification.className = `notification ${type}`;
+        setTimeout(() => {
+            notification.className = "notification hidden";
+        }, 3000);
+    }
+    showNotification("This website is in Progress", "warning")
+    showNotification("Test", "error")
+    showNotification("Test", "succsess")
+</script>
+</html>
