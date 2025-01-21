@@ -45,35 +45,12 @@ func main() {
 
 
 	r.POST("/login/:email/:password", func(c *gin.Context){
-		email := c.Param("email")
-		password := c.Param("password")
-
-		loginReq := LoginRequest {
-			Email: email,
-			Password: password,
-		}
-
-		success, errMSG := login(loginReq)
-
-		if !success {
-			c.String(500, errMSG)
-		}else{
-			c.String(200, errMSG)
-		}
+		POSTloginHandler(c)
 
 	})
 
 	r.POST("/register/:email/:username/:password", func(c *gin.Context){
-		email := c.Param("email")
-		username := c.Param("username")
-		password := c.Param("password")
-		success, msg := register(email, username, password)
-
-		if !success{
-			c.String(500,msg)
-		}else{
-			c.String(201, msg)
-		}
+			POSTregisterHandler(c)
 	})
 
 
@@ -81,12 +58,13 @@ func main() {
 
 	if(gin.Mode() == gin.DebugMode){
 		fmt.Println("Running in debug mode")
+		fmt.Println("Database is disabled")
+	}else{
+		err := initDB()
+		if err != nil{
+			panic(err)
+		}
 	}
-/* 	err := initDB()
-	if err != nil{
-		panic(err)
-	} */
-	 fmt.Println("Database is disabled")
 	 
 	fmt.Println("Server running on http://localhost:8088")
 	r.Run(":8088")
