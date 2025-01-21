@@ -8,7 +8,7 @@ import (
 
 
 func main() { 
-	gin.SetMode(gin.ReleaseMode)
+	gin.SetMode(gin.DebugMode)
 	r := gin.Default()
 	r.GET("/css/styles.css", func(c *gin.Context) {
 		c.File("public/css/styles.css")
