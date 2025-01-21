@@ -14,5 +14,18 @@
         <li><a href="/login">Login</a></li>
         <li><a href="/register">Register</a></li>
     </ul>
+    <div id="notification" class="hidden"></div>
 </body>
+<script>
+    const notification = document.getElementById('notification');
+
+    function showNotification(message, type) {
+        notification.textContent = message;
+        notification.className = `notification ${type}`;
+        setTimeout(() => {
+            notification.className = "notification hidden";
+        }, 3000);
+    }
+    showNotification("There are no News yet", "warning")
+</script>
 </html>
