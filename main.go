@@ -55,8 +55,8 @@ func main() {
 	
 
 	if(gin.Mode() == gin.DebugMode){
-		fmt.Println("Running in debug mode")
-		fmt.Println("Database is disabled")
+		fmt.Println("Running in debug mode...")
+		fmt.Println("...Database is disabled")
 	}else{
 		err := initDB()
 		if err != nil{
