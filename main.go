@@ -41,8 +41,6 @@ func main() {
 		newshandler(c)
 	})
 
-	
-
 
 	r.POST("/login/:email/:password", func(c *gin.Context){
 		POSTloginHandler(c)
@@ -54,7 +52,7 @@ func main() {
 	})
 
 
-
+	
 
 	if(gin.Mode() == gin.DebugMode){
 		fmt.Println("Running in debug mode")
