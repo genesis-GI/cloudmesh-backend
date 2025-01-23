@@ -18,10 +18,13 @@
     <h1>Welcome to Genesis</h1>
     <div class="container">
         <div class="textbox">
-          <a> [ Welcometext ] </a>
+
+            <a> [ Welcometext ] </a>
+            
         </div>
-      </div>
-    
+    </div>
+    <div id="notification" class="hidden"></div>
+
 </body>
 <script>
     const notification = document.getElementById('notification');
@@ -33,8 +36,8 @@
             notification.className = "notification hidden";
         }, 3000);
     }
-    showNotification("This website is in Progress", "warning")
-    showNotification("Test", "error")
-    showNotification("Test", "succsess")
+    /* showNotification("This website is in Progress", "warning") */
+    /* showNotification("Test", "error") */
+    showNotification("Welcome to the Genesis Website", "success")
 </script>
 </html>

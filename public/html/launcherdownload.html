@@ -18,13 +18,13 @@
     <h1>Download the Genesis Launcher</h1>
     
     <h1> </h1>
-    <button onclick="download()">Download</button>
+    <button id="button" onclick="download()">Download</button>
 
 </body>
 <script>
     function download(){
         //window.location.href='/';    -> Launcher download link 
-        showNotification("Launcher comming soon!", 'warning')
+        showNotification("Launcher comming soon!", 'error')
     }
 
     const notification = document.getElementById('notification');

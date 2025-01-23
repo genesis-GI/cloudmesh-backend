@@ -7,9 +7,7 @@ import (
 	"log"
 	"strings"
 	"time"
-
 	"regexp"
-
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -25,7 +23,7 @@ func initDB() error {
 	if gin.ReleaseMode == gin.DebugMode {
 		clientOptions = options.Client().ApplyURI("mongodb://localhost:27017")
 	}else{
-		clientOptions = options.Client().ApplyURI("mongodb://81.10.229.31:27017")
+		clientOptions = options.Client().ApplyURI("mongodb://81.10.229.31:38128")
 	}
 	
 

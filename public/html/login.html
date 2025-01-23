@@ -21,6 +21,21 @@
     <input type="text" id="password" name="password" placeholder="Enter your password" maxlength="50">
     <div id="notification" class="hidden"></div>
 
-    <button>Submit</button>
+    <button id="button" onclick="submitlogin()">Submit</button>
 </body>
+<script>
+    function submitlogin(){
+        //window.location.href='/';    -> Launcher download link 
+        showNotification("Website is in Progress", 'error')
+    }
+
+    const notification = document.getElementById('notification');
+        function showNotification(message, type) {
+            notification.textContent = message;
+            notification.className = `notification ${type}`;
+            setTimeout(() => {
+                notification.className = "notification hidden";
+            }, 3000);
+        }
+</script>
 </html>
