@@ -10,6 +10,9 @@ import (
 )
 
 func main() {
+
+	var isDbEnabled bool = true
+
 	fmt.Println("Press 'd' and Enter within 5 seconds to enable debug mode...")
 	debugModeCh := make(chan bool)
 	go func() {
@@ -24,8 +27,16 @@ func main() {
 	select {
 	case enableDebug := <-debugModeCh:
 		if enableDebug {
-			fmt.Println("Debug mode enabled!")
 			gin.SetMode(gin.DebugMode)
+			fmt.Println("Debug mode enabled!")
+			fmt.Println("Do you want to disable database? (y/n)")
+			reader := bufio.NewReader(os.Stdin)
+			input, _ := reader.ReadString('\n')
+			if input == "y\n" || input == "y\r\n" {
+				fmt.Println("Database is disabled.")
+				isDbEnabled = false
+			}
+			
 		} else {
 			fmt.Println("Starting in release mode.")
 			gin.SetMode(gin.ReleaseMode)
@@ -84,16 +95,14 @@ func main() {
 
 	
 
-	if(gin.Mode() == gin.DebugMode){
-		fmt.Println("Running in debug mode...")
-		fmt.Println("...Database is disabled")
-	}else{
+	if isDbEnabled {
 		err := initDB()
 		if err != nil{
 			panic(err)
 		}
 	}
-	 
+
+	fmt.Println("Environment:", gin.Mode())
 	fmt.Println("Server running on http://localhost:8088")
 	r.Run(":8088")
 }

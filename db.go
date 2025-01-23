@@ -21,8 +21,10 @@ func initDB() error {
 
 	var clientOptions *options.ClientOptions
 	if gin.ReleaseMode == gin.DebugMode {
+		fmt.Println("Connecting to local db...")
 		clientOptions = options.Client().ApplyURI("mongodb://localhost:27017")
 	}else{
+		fmt.Println("Connecting to remote db...")
 		clientOptions = options.Client().ApplyURI("mongodb://81.10.229.31:38128")
 	}
 	
