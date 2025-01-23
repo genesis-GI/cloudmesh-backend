@@ -8,7 +8,6 @@ import (
 	"strings"
 	"time"
 	"regexp"
-	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -20,7 +19,7 @@ var accounts *mongo.Collection
 func initDB() error {
 
 	var clientOptions *options.ClientOptions
-	if gin.ReleaseMode == gin.DebugMode {
+	if useRemoteDB == false{
 		fmt.Println("Connecting to local db...")
 		clientOptions = options.Client().ApplyURI("mongodb://localhost:27017")
 	}else{
