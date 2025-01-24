@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"os"
 	"time"
-
 	"github.com/gin-gonic/gin"
 )
 
@@ -104,6 +103,10 @@ func main() {
 
 
 	
+	r.NoRoute(func (c *gin.Context){
+		errorHandler(c)
+	})
+	
 
 	if isDbEnabled {
 		err := initDB()
@@ -115,8 +118,4 @@ func main() {
 	fmt.Println("Environment:", gin.Mode())
 	fmt.Println("Server running on http://localhost:8088")
 	r.Run(":8088")
-}
-
-func getUseRemoteDb() bool {
-	return useRemoteDB
 }
