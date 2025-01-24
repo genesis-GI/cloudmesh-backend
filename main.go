@@ -104,7 +104,7 @@ func main() {
 
 	
 	r.NoRoute(func (c *gin.Context){
-		indexHandler(c)
+		errorHandler(c)
 	})
 	
 
