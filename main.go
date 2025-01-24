@@ -11,7 +11,7 @@ import (
 
 
 var useRemoteDB bool = true
-
+var r any
 func main() {
 
 	var isDbEnabled bool = true
@@ -103,6 +103,10 @@ func main() {
 	})
 
 
+	
+	r.NoRoute(func (c *gin.Context){
+		indexHandler(c)
+	})
 	
 
 	if isDbEnabled {
