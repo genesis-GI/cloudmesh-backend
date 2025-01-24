@@ -22,3 +22,7 @@ func regsiterWebsiteHandler(c *gin.Context){
 func newshandler(c *gin.Context){
 	c.File("public/html/news.html")
 }
+
+func errorHandler(c *gin.Context){
+	c.File("public/html/error.html")
+}

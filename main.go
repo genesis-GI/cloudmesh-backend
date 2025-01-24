@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"os"
 	"time"
-
 	"github.com/gin-gonic/gin"
 )
 
@@ -103,6 +102,10 @@ func main() {
 	})
 
 
+	
+	r.NoRoute(func (c *gin.Context){
+		errorHandler(c)
+	})
 	
 
 	if isDbEnabled {
