@@ -116,7 +116,3 @@ func main() {
 	fmt.Println("Server running on http://localhost:8088")
 	r.Run(":8088")
 }
-
-func getUseRemoteDb() bool {
-	return useRemoteDB
-}
