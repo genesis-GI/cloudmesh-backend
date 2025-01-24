@@ -5,13 +5,12 @@ import (
 	"fmt"
 	"os"
 	"time"
-
 	"github.com/gin-gonic/gin"
 )
 
 
 var useRemoteDB bool = true
-var r any
+
 func main() {
 
 	var isDbEnabled bool = true
