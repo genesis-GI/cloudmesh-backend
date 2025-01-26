@@ -54,7 +54,14 @@ func main() {
 	})
 
 	r.GET("/ai", func(c *gin.Context){
-		c.File("public/html/ai.html")
+		if gin.ReleaseMode == gin.DebugMode {
+			c.File("public/html/ai.html")
+		}else{
+			c.JSON(503, gin.H{
+				"503":"Service unavailable!",
+				"message": "This is under construction and will come soon!",
+			})	
+		}
 	})
 
 	
