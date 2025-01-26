@@ -27,7 +27,7 @@ jobs:
 
     - name: Run backend
       run: |
-        go run .
+        go run . &  # Run the Go server in the background
 
     - name: Wait for server to start and check if routes are reachable
       run: |
