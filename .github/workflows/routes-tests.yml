@@ -2,11 +2,9 @@ name: Routes Tests
 
 on:
   push:
-    branches:
-      - '**'  # Trigger for all branches
+    branches: [ "main" ]
   pull_request:
-    branches:
-      - '**'  # Trigger for all branches
+    branches: [ "main" ]
 
 jobs:
   test:
@@ -29,7 +27,7 @@ jobs:
 
     - name: Run backend
       run: |
-        go run . &  # Run the Go server in the background
+        go run .
 
     - name: Wait for server to start and check if routes are reachable
       run: |
