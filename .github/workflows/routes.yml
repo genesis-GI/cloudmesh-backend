@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - addMoreTests
   pull_request:
     branches:
       - main
