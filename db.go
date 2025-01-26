@@ -5,9 +5,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"regexp"
 	"strings"
 	"time"
-	"regexp"
+	"github.com/fatih/color"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -20,26 +21,28 @@ func initDB() error {
 
 	var clientOptions *options.ClientOptions
 	if useRemoteDB == false{
-		fmt.Println("Connecting to local db...")
+		color.Cyan("[INFO]: Connecting to local db...")
 		clientOptions = options.Client().ApplyURI("mongodb://localhost:27017")
 	}else{
-		fmt.Println("Connecting to remote db...")
+		color.Cyan("[INFO]: Connecting to remote db...")
 		clientOptions = options.Client().ApplyURI("mongodb://81.10.229.31:38128")
 	}
 	
 
 	client, err := mongo.Connect(context.TODO(), clientOptions)
 	if err != nil {
-		return fmt.Errorf("failed to connect to the database: %w", err)
+		color.Red("[✗ FAILURE] Failed to connect to the database")
+		return fmt.Errorf("Failed to connect to the database: %w", err)
 	}
 
 	err = client.Ping(context.TODO(), nil)
 	if err != nil {
-		return fmt.Errorf("database is unavailable: %w", err)
+		color.Red("[✗ FAILURE] Database is unavailable")
+		return fmt.Errorf("Database is unavailable: %w", err)
 	}
 
 	accounts = client.Database("genesis").Collection("accounts")
-	fmt.Println("DB initiated successfully")
+	color.Green("[✓ SUCCESS] DB initiated successfully")
 	return nil
 }
 

@@ -1,65 +1,33 @@
 package main
 
 import (
-	"bufio"
-	"fmt"
 	"os"
-	"time"
+	"github.com/fatih/color"
 	"github.com/gin-gonic/gin"
 )
 
 
 var useRemoteDB bool = true
-
+var isDbEnabled bool = true
 func main() {
 
-	var isDbEnabled bool = true
-	
-
-	fmt.Println("Press 'd' and Enter within 5 seconds to enable debug mode...")
-	debugModeCh := make(chan bool)
-	go func() {
-		reader := bufio.NewReader(os.Stdin)
-		input, _ := reader.ReadString('\n')
-		if input == "d\n" || input == "d\r\n" { 
-			debugModeCh <- true
-		} else {
-			debugModeCh <- false
-		}
-	}()
-	select {
-	case enableDebug := <-debugModeCh:
-		if enableDebug {
+	if len(os.Args) > 1 {
+		input := os.Args[1]
+		if input == "debug" {
+			debug()
 			gin.SetMode(gin.DebugMode)
-			fmt.Println("Debug mode enabled!")
-			fmt.Println("Do you want to disable database? (y/n)")
-			reader := bufio.NewReader(os.Stdin)
-			input, _ := reader.ReadString('\n')
-			if input == "y\n" || input == "y\r\n" {
-				fmt.Println("Database is disabled.")
-				isDbEnabled = false
-			}else{
-				fmt.Println("Do you want to use remote database? (y/n)")
-				input, _ = reader.ReadString('\n')
-				if input == "n\n" || input == "n\r\n" {
-					fmt.Println("Using local database.")
-					useRemoteDB = false
-				}
-			}
-		} else {
-			fmt.Println("Starting in release mode.")
+			
+		}else if input == "release" {
 			gin.SetMode(gin.ReleaseMode)
+
+		}else {
+			color.Red("[✗ FAILURE] Invalid argument: %s", input)
+			os.Exit(1)
 		}
-	case <-time.After(5 * time.Second):
-		fmt.Println("Timeout! Starting in release mode.")
-		gin.SetMode(gin.ReleaseMode)
 	}
-
-
-
+	color.Cyan("[INFO]: Starting in %s mode", gin.Mode())	
 	r := gin.Default()
 
-	
 	r.GET("/css/styles.css", func(c *gin.Context) {
 		c.File("public/css/styles.css")
 	})
@@ -94,13 +62,22 @@ func main() {
 
 	r.POST("/login/:email/:password", func(c *gin.Context){
 		POSTloginHandler(c)
-
 	})
 
 	r.POST("/register/:email/:username/:password", func(c *gin.Context){
-			POSTregisterHandler(c)
+		POSTregisterHandler(c)
 	})
 
+	r.GET("/ai", func(c *gin.Context){
+		if gin.Mode() == gin.DebugMode  {
+			c.File("public/html/ai.html")
+		}else{
+			c.JSON(503, gin.H{
+				"503":"Service unavailable!",
+				"message": "This is under construction and will come soon!",
+			})	
+		}
+	})
 
 	
 	r.NoRoute(func (c *gin.Context){
@@ -115,7 +92,7 @@ func main() {
 		}
 	}
 
-	fmt.Println("Environment:", gin.Mode())
-	fmt.Println("Server running on http://localhost:8088")
+	color.Magenta("[Environment]: %s", gin.Mode())
+	color.Green("Server running on http://localhost:8088")
 	r.Run(":8088")
 }
