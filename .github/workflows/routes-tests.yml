@@ -30,10 +30,10 @@ jobs:
         go run . &  # Run the Go server in the background
 
     - name: Wait for server to start
-      run: sleep 5  # Give the server time to start
+      run: sleep 10  
 
     - name: Check if routes are reachable
       run: |
-        curl --fail http://localhost:8080/ || exit 1
-        curl --fail http://localhost:8080/login || exit 1
-        curl --fail http://localhost:8080/register || exit 1
+        curl --fail http://localhost:8088/ || exit 1
+        curl --fail http://localhost:8088/login || exit 1
+        curl --fail http://localhost:8088/register || exit 1
