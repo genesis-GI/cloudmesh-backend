@@ -24,6 +24,7 @@ func debug(){
 	case enableDebug := <-debugModeCh:
 		if enableDebug {
 			gin.SetMode(gin.DebugMode)
+			debugMode = true
 			fmt.Println("Debug mode enabled!")
 			fmt.Println("Do you want to disable database? (y/n)")
 			reader := bufio.NewReader(os.Stdin)
@@ -41,11 +42,13 @@ func debug(){
 			}
 		} else {
 			fmt.Println("Starting in release mode.")
+			debugMode = false
 			gin.SetMode(gin.ReleaseMode)
 		}
 	case <-time.After(5 * time.Second):
 		fmt.Println("Timeout! Starting in release mode.")
 		gin.SetMode(gin.ReleaseMode)
+		debugMode = false
 	}
 
 }
