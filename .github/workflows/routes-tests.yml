@@ -10,7 +10,7 @@ on:
 
 jobs:
   test:
-  name: Test routes
+    name: Test routes
     runs-on: ubuntu-latest
 
     steps:
