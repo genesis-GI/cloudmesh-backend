@@ -1,0 +1,41 @@
+name: Routes Tests
+
+on:
+  push:
+    branches:
+      - '**'  # Trigger for all branches
+  pull_request:
+    branches:
+      - '**'  # Trigger for all branches
+
+jobs:
+  test:
+  name: Test routes
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Go
+      uses: actions/setup-go@v3
+      with:
+        go-version: '1.23.3'  # Adjust to your Go version
+
+    - name: Install dependencies
+      run: |
+        go mod tidy
+        go mod vendor
+
+    - name: Run backend
+      run: |
+        go run . &  # Run the Go server in the background
+
+    - name: Wait for server to start
+      run: sleep 5  # Give the server time to start
+
+    - name: Check if routes are reachable
+      run: |
+        curl --fail http://localhost:8080/ || exit 1
+        curl --fail http://localhost:8080/login || exit 1
+        curl --fail http://localhost:8080/register || exit 1
