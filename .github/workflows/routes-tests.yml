@@ -2,11 +2,9 @@ name: Routes Tests
 
 on:
   push:
-    branches:
-      - '**'  # Trigger for all branches
+    branches: [ "main" ]
   pull_request:
-    branches:
-      - '**'  # Trigger for all branches
+    branches: [ "main" ]
 
 jobs:
   test:
