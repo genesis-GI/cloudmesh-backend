@@ -53,6 +53,10 @@ func main() {
 		POSTregisterHandler(c)
 	})
 
+	r.GET("/ai", func(c *gin.Context){
+		c.File("public/html/ai.html")
+	})
+
 	
 	r.NoRoute(func (c *gin.Context){
 		errorHandler(c)
