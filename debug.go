@@ -6,10 +6,11 @@ import(
 	"fmt"
 	"bufio"
 	"github.com/gin-gonic/gin"
+	"github.com/fatih/color"
 )
 
 func debug(){
-	fmt.Println("Press 'd' and Enter within 5 seconds to enable debug mode...")
+	color.White("Press 'd' and Enter within 5 seconds to enable debug mode...")
 	debugModeCh := make(chan bool)
 	go func() {
 		reader := bufio.NewReader(os.Stdin)
@@ -46,7 +47,7 @@ func debug(){
 			gin.SetMode(gin.ReleaseMode)
 		}
 	case <-time.After(5 * time.Second):
-		fmt.Println("Timeout! Starting in release mode.")
+		color.Cyan("[INFO]: Starting in release mode.")
 		gin.SetMode(gin.ReleaseMode)
 		debugMode = false
 	}

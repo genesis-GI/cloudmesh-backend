@@ -1,7 +1,9 @@
 package main
 
 import (
-	"fmt"
+
+
+	"github.com/fatih/color"
 	"github.com/gin-gonic/gin"
 )
 
@@ -78,7 +80,7 @@ func main() {
 		}
 	}
 
-	fmt.Println("Environment:", gin.Mode())
-	fmt.Println("Server running on http://localhost:8088")
+	color.Magenta("[Environment]: %s", gin.Mode())
+	color.Green("Server running on http://localhost:8088")
 	r.Run(":8088")
 }
