@@ -1,0 +1,7 @@
+Green = Success
+yellow = warning
+red = error
+
+Cyan = info
+white = neutral 
+magenta = environment infos
