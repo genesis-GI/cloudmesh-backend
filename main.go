@@ -1,8 +1,7 @@
 package main
 
 import (
-
-
+	"os"
 	"github.com/fatih/color"
 	"github.com/gin-gonic/gin"
 )
@@ -10,12 +9,25 @@ import (
 
 var useRemoteDB bool = true
 var isDbEnabled bool = true
-var debugMode bool = false
 func main() {
-	debug()
+
+	if len(os.Args) > 1 {
+		input := os.Args[1]
+		if input == "debug" {
+			debug()
+			gin.SetMode(gin.DebugMode)
+			
+		}else if input == "release" {
+			gin.SetMode(gin.ReleaseMode)
+
+		}else {
+			color.Red("[✗ FAILURE] Invalid argument: %s", input)
+			os.Exit(1)
+		}
+	}
+	color.Cyan("[INFO]: Starting in %s mode", gin.Mode())	
 	r := gin.Default()
 
-	
 	r.GET("/css/styles.css", func(c *gin.Context) {
 		c.File("public/css/styles.css")
 	})
@@ -57,7 +69,7 @@ func main() {
 	})
 
 	r.GET("/ai", func(c *gin.Context){
-		if gin.ReleaseMode == gin.DebugMode || debugMode {
+		if gin.Mode() == gin.DebugMode  {
 			c.File("public/html/ai.html")
 		}else{
 			c.JSON(503, gin.H{
