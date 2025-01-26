@@ -8,6 +8,7 @@ import (
 
 var useRemoteDB bool = true
 var isDbEnabled bool = true
+var debugMode bool = false
 func main() {
 	debug()
 	r := gin.Default()
@@ -54,7 +55,7 @@ func main() {
 	})
 
 	r.GET("/ai", func(c *gin.Context){
-		if gin.ReleaseMode == gin.DebugMode {
+		if gin.ReleaseMode == gin.DebugMode || debugMode {
 			c.File("public/html/ai.html")
 		}else{
 			c.JSON(503, gin.H{
