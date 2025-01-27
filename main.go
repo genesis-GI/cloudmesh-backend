@@ -2,6 +2,8 @@ package main
 
 import (
 	"os"
+	"strings"
+
 	"github.com/fatih/color"
 	"github.com/gin-gonic/gin"
 )
@@ -13,6 +15,8 @@ func main() {
 
 	if len(os.Args) > 1 {
 		input := os.Args[1]
+		input = strings.ToLower(input)
+		
 		if input == "debug" {
 			debug()
 			gin.SetMode(gin.DebugMode)
@@ -33,7 +37,7 @@ func main() {
 	})
 
 	r.GET("/favicon.ico", func(c * gin.Context){
-		c.String(200, "Comming soon!")
+		c.String(200, "There is no icon currently!")
 	})
 
 
