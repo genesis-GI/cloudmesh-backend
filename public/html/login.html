@@ -16,27 +16,48 @@
         <li><a href="/ai"> --< Genesis AI >-- </a></li>
     </ul>
 
-    <input type="text" id="username" name="username" placeholder="Enter your username" maxlength="50">
-    <div id="notification" class="hidden"></div>
+    <input type="text" id="email" name="email" placeholder="Enter your email" maxlength="50">
+    <div id="email-notification" class="hidden"></div>
 
     <input type="text" id="password" name="password" placeholder="Enter your password" maxlength="50">
-    <div id="notification" class="hidden"></div>
+    <div id="password-notification" class="hidden"></div>
 
     <button id="button" onclick="submitlogin()">Submit</button>
 </body>
 <script>
-    function submitlogin(){
-        //window.location.href='/';    -> Launcher download link 
-        showNotification("Website is in Progress", 'error')
-    }
+function submitlogin() {
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    
+    const url = `/login/${encodeURIComponent(email)}/${encodeURIComponent(password)}`;
 
-    const notification = document.getElementById('notification');
-        function showNotification(message, type) {
-            notification.textContent = message;
-            notification.className = `notification ${type}`;
-            setTimeout(() => {
-                notification.className = "notification hidden";
-            }, 3000);
+    fetch(url, {
+    method: 'POST'
+    })
+    .then(response => response.text())
+    .then(data => {
+        if (data === "Login successful!") {
+            showNotification("Login successful", "success");
+        } else {
+            showNotification("Invalid credentials", "error");
         }
+    })
+    .catch((error) => {
+        console.error("Error:", error);
+        showNotification("Error logging in", "error");
+    });
+
+
+}
+
+
+    function showNotification(message, type) {
+        const notification = document.getElementById('email-notification');
+        notification.textContent = message;
+        notification.className = `notification ${type}`;
+        setTimeout(() => {
+            notification.className = "notification hidden";
+        }, 3000);
+    }
 </script>
 </html>
