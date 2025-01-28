@@ -25,32 +25,32 @@
     <button id="button" onclick="submitlogin()">Submit</button>
 </body>
 <script>
-function submitlogin() {
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
-    
-    const loginData = { 
-        email: email,
-        password: password
-    };
+    function submitlogin() {
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        
+        const loginData = { 
+            email: email,
+            password: password
+        };
 
-    fetch("/login", {
-    method: "POST",
-    headers: {
-        "Content-Type": "application/json"
-    },
-        body: JSON.stringify(loginData)
-    })
-    .then(response => response.json())
-    .then(data => {
-        showNotification("Login successful!", "success");
-    })
-    .catch(error => {
-        console.error("Error:", error);
-    });
+        fetch("/login", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+            body: JSON.stringify(loginData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            showNotification("Login successful!", "success");
+        })
+        .catch(error => {
+            console.error("Error:", error);
+        });
 
 
-}
+    }
 
 
     function showNotification(message, type) {
