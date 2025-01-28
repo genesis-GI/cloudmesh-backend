@@ -1,8 +1,11 @@
 package main
 
 import (
-"github.com/gin-gonic/gin"
+	"fmt"
+	"net/http"
+	"time"
 
+	"github.com/gin-gonic/gin"
 )
 
 func POSTregisterHandler(c *gin.Context){
@@ -19,19 +22,26 @@ func POSTregisterHandler(c *gin.Context){
 }
 
 func POSTloginHandler(c *gin.Context){
-	email := c.Param("email")
-	password := c.Param("password")
+	var loginReq LoginRequest
 
-	loginReq := LoginRequest {
-		Email: email,
-		Password: password,
+	if err := c.ShouldBindJSON(&loginReq); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
 	}
-
+	fmt.Println(loginReq)
 	success, errMSG := login(loginReq)
+	_=success
 
-	if !success {
-		c.String(500, errMSG)
+	if success {
+		c.JSON(200, gin.H{
+			"message": errMSG,
+			"date": time.Now(),
+		})
+
 	}else{
-		c.String(200, errMSG)
+		
+		c.JSON(500, gin.H{
+			"error": errMSG,
+		})
 	}
 }

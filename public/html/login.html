@@ -29,22 +29,24 @@ function submitlogin() {
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
     
-    const url = `/login/${encodeURIComponent(email)}/${encodeURIComponent(password)}`;
+    const loginData = { 
+        email: email,
+        password: password
+    };
 
-    fetch(url, {
-    method: 'POST'
+    fetch("/login", {
+    method: "POST",
+    headers: {
+        "Content-Type": "application/json"
+    },
+        body: JSON.stringify(loginData)
     })
-    .then(response => response.text())
+    .then(response => response.json())
     .then(data => {
-        if (data === "Login successful!") {
-            showNotification("Login successful", "success");
-        } else {
-            showNotification("Invalid credentials", "error");
-        }
+        showNotification("Login successful!", "success");
     })
-    .catch((error) => {
+    .catch(error => {
         console.error("Error:", error);
-        showNotification("Error logging in", "error");
     });
 
 

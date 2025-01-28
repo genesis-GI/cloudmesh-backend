@@ -64,7 +64,7 @@ func main() {
 	})
 
 
-	r.POST("/login/:email/:password", func(c *gin.Context){
+	r.POST("/login", func(c *gin.Context){
 		POSTloginHandler(c)
 	})
 

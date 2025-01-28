@@ -97,7 +97,7 @@ func login(req LoginRequest) (bool, string) {
 	}
 	req.Email = strings.TrimSpace(req.Email)
 
-
+	color.Cyan("[INFO]: Login attempt for email: %s", req.Email)
 	var account Account
 	filter := bson.D{{Key: "email", Value: req.Email}}
 	err := accounts.FindOne(context.TODO(), filter).Decode(&account)
@@ -118,6 +118,7 @@ func login(req LoginRequest) (bool, string) {
 		return false, "Invalid email or password"
 	}
 
+	color.Cyan("[INFO]: Login successful for email: %s", req.Email)
 	// Login successful
 	return true, "Login successful!"
 }
