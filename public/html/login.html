@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Cloudmesh -> Login</title>
     <link rel="stylesheet" href="/css/styles.css">
 </head>
 <body>
@@ -16,27 +16,50 @@
         <li><a href="/ai"> --< Genesis AI >-- </a></li>
     </ul>
 
-    <input type="text" id="username" name="username" placeholder="Enter your username" maxlength="50">
-    <div id="notification" class="hidden"></div>
+    <input type="text" id="email" name="email" placeholder="Enter your email" maxlength="50">
+    <div id="email-notification" class="hidden"></div>
 
     <input type="text" id="password" name="password" placeholder="Enter your password" maxlength="50">
-    <div id="notification" class="hidden"></div>
+    <div id="password-notification" class="hidden"></div>
 
     <button id="button" onclick="submitlogin()">Submit</button>
 </body>
 <script>
-    function submitlogin(){
-        //window.location.href='/';    -> Launcher download link 
-        showNotification("Website is in Progress", 'error')
+    function submitlogin() {
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        
+        const loginData = { 
+            email: email,
+            password: password
+        };
+
+        fetch("/login", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+            body: JSON.stringify(loginData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            showNotification("Login successful!", "success");
+        })
+        .catch(error => {
+            console.error("Error:", error);
+        });
+
+
     }
 
-    const notification = document.getElementById('notification');
-        function showNotification(message, type) {
-            notification.textContent = message;
-            notification.className = `notification ${type}`;
-            setTimeout(() => {
-                notification.className = "notification hidden";
-            }, 3000);
-        }
+
+    function showNotification(message, type) {
+        const notification = document.getElementById('email-notification');
+        notification.textContent = message;
+        notification.className = `notification ${type}`;
+        setTimeout(() => {
+            notification.className = "notification hidden";
+        }, 3000);
+    }
 </script>
 </html>
