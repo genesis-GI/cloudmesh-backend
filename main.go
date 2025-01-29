@@ -58,7 +58,7 @@ func main() {
 
 	r.GET("/register", func(c *gin.Context){
 		if gin.Mode() == gin.ReleaseMode{
-			c.String(503, "Service unavailable!")
+			c.String(503, "Service unavailable! This is not ready yet!")
 		}else {
 			regsiterWebsiteHandler(c)
 		}
