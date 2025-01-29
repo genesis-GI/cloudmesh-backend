@@ -8,4 +8,4 @@ RUN go build -o cmb .
 
 EXPOSE 8088
 
-CMD [ "./cmb release" ]
+CMD [ "./cmb"]

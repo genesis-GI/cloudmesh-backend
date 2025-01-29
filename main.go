@@ -16,18 +16,19 @@ func main() {
 	if len(os.Args) > 1 {
 		input := os.Args[1]
 		input = strings.ToLower(input)
-		
+
 		if input == "debug" {
 			debug()
 			gin.SetMode(gin.DebugMode)
 			
-		}else if input == "release" {
-			gin.SetMode(gin.ReleaseMode)
-
 		}else {
 			color.Red("[✗ FAILURE] Invalid argument: %s", input)
 			os.Exit(1)
 		}
+	}else
+	{
+		color.Cyan("[INFO]: No arguments provided")
+		gin.SetMode(gin.ReleaseMode)
 	}
 	color.Cyan("[INFO]: Starting in %s mode", gin.Mode())	
 	r := gin.Default()
