@@ -73,8 +73,22 @@ func main() {
 		POSTloginHandler(c)
 	})
 
-	r.POST("/register/:email/:username/:password", func(c *gin.Context){
-		POSTregisterHandler(c)
+	r.POST("/register", func(c *gin.Context) {
+		var req struct {
+			Email    string `json:"email"`
+			Username string `json:"username"`
+			Password string `json:"password"`
+		}
+		if err := c.BindJSON(&req); err != nil {
+			c.JSON(400, gin.H{"error": "Invalid request"})
+			return
+		}
+		success, message := register(req.Email, req.Username, req.Password)
+		if success {
+			c.JSON(200, gin.H{"message": message})
+		} else {
+			c.JSON(400, gin.H{"error": message})
+		}
 	})
 
 	r.GET("/ai", func(c *gin.Context){
