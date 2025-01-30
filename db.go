@@ -185,7 +185,6 @@ func register(email, username, password string) (bool, string) {
     return true, "Account registered successfully!"
 }
 
-// Add this helper to check username usage
 func findByUsername(username string) (bool, string) {
     filter := bson.M{"username": username}
     var result bson.M
