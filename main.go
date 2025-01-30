@@ -58,7 +58,7 @@ func main() {
 
 	r.GET("/register", func(c *gin.Context){
 		if gin.Mode() == gin.ReleaseMode{
-			c.String(503, "Service unavailable! This is not ready yet!")
+			c.String(503, "Service unavailable as the feature is not ready yet!")	
 		}else {
 			regsiterWebsiteHandler(c)
 		}
@@ -81,10 +81,7 @@ func main() {
 		if gin.Mode() == gin.DebugMode  {
 			c.File("public/html/ai.html")
 		}else{
-			c.JSON(503, gin.H{
-				"503":"Service unavailable!",
-				"message": "This is under construction and will come soon!",
-			})	
+			c.String(503, "Service unavailable as the feature is not ready yet!")	
 		}
 	})
 
