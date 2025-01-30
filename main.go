@@ -57,11 +57,7 @@ func main() {
 
 
 	r.GET("/register", func(c *gin.Context){
-		if gin.Mode() == gin.ReleaseMode{
-			c.String(503, "Service unavailable as the feature is not ready yet!")	
-		}else {
-			regsiterWebsiteHandler(c)
-		}
+		regsiterWebsiteHandler(c)
 	})
 
 	r.GET("/news", func(c *gin.Context){
