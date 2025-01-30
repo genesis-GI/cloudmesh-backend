@@ -15,6 +15,12 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+func isValidUsername(username string) bool {
+    // Define a regex pattern for valid usernames (e.g., alphanumeric characters)
+    var validUsernamePattern = regexp.MustCompile(`^[a-zA-Z0-9]+$`)
+    return validUsernamePattern.MatchString(username)
+}
+
 var accounts *mongo.Collection
 
 func initDB() error {
@@ -89,6 +95,27 @@ func findByEmail(email string) (bool, string) {
 	return true, string(jsonData)
 }
 
+func findByEmailOrUsername(email, username string) (bool, string) {
+    filter := bson.M{
+        "$or": []bson.M{
+            {"email": email},
+            {"username": username},
+        },
+    }
+    var result bson.M
+    err := accounts.FindOne(context.TODO(), filter).Decode(&result)
+    if err == mongo.ErrNoDocuments {
+        return false, ""
+    } else if err != nil {
+        return false, ""
+    }
+    jsonData, err := json.Marshal(result)
+    if err != nil {
+        log.Printf("Error converting document to JSON: %v\n", err)
+        return false, ""
+    }
+    return true, string(jsonData)
+}
 
 func login(req LoginRequest) (bool, string) {
 	// Check if email is in a valid format -> No 'SQL' injection
@@ -125,31 +152,61 @@ func login(req LoginRequest) (bool, string) {
 
 
 
-func register(email, username, password string) (bool, string){
-	found, _ := findByEmail(email)
-	if found{
-		return false, "User already registered!"
-	}
+func register(email, username, password string) (bool, string) {
+    // Check email format
+    if !isValidEmail(email) {
+        return false, "Invalid email format"
+    }
 
-	hashedPW, err := HashPassword(password)
-	if err != nil{
-		return false, "Error: "+err.Error()
-	}
+    // Check if email is already in use
+    foundEmail, _ := findByEmail(email)
+    if foundEmail {
+        return false, "Email already in use"
+    }
 
-	newAccount := Account{
-		Email: email,
-		Username: username,
-		Password: hashedPW,
-		Admin: false,
-		Wave: 5,
-		CreatedAt: time.Now(),
-	}
-	
-	_, creationErr := accounts.InsertOne(context.TODO(), newAccount)
+    // Check if username is already in use
+    foundUsername, _ := findByUsername(username)
+    if foundUsername {
+        return false, "Username already in use"
+    }
 
-	if creationErr != nil{
-		return false, "Failed to register account!"
-	}
+    hashedPW, err := HashPassword(password)
+    if err != nil {
+        return false, "Error: " + err.Error()
+    }
 
-	return true, "Account registered successfully!"
+    newAccount := Account{
+        Email:     email,
+        Username:  username,
+        Password:  hashedPW,
+        Admin:     false,
+        Wave:      5,
+        CreatedAt: time.Now(),
+    }
+
+    _, creationErr := accounts.InsertOne(context.TODO(), newAccount)
+    if creationErr != nil {
+        return false, "Failed to register account!"
+    }
+    return true, "Account registered successfully!"
+}
+
+func findByUsername(username string) (bool, string) {
+    if !isValidUsername(username) {
+        return false, "Invalid username format"
+    }
+    filter := bson.M{"username": username}
+    var result bson.M
+    err := accounts.FindOne(context.TODO(), filter).Decode(&result)
+    if err == mongo.ErrNoDocuments {
+        return false, ""
+    } else if err != nil {
+        return false, ""
+    }
+    jsonData, err := json.Marshal(result)
+    if err != nil {
+        log.Printf("Error converting document to JSON: %v\n", err)
+        return false, ""
+    }
+    return true, string(jsonData)
 }

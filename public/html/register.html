@@ -5,6 +5,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cloudmesh -> Register</title>
     <link rel="stylesheet" href="/css/styles.css">
+    <style>
+        .spinner {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 30px;
+            height: 30px;
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
 </head>
 <body>
     <ul class="navbar">
@@ -15,31 +37,65 @@
         <li><a href="/register">Register</a></li>
         <li><a href="/ai"> --< Genesis AI >-- </a></li>
     </ul>
-    <input type="text" id="e-mail" name="e-mail" placeholder="Enter your e-mail" maxlength="50">
-    <div id="notification" class="hidden"></div>
+    <input type="text" id="email" name="email" placeholder="Enter your email" maxlength="50">
+    <div id="email-notification" class="hidden"></div>
 
     <input type="text" id="username" name="username" placeholder="Enter your username" maxlength="50">
-    <div id="notification" class="hidden"></div>
+    <div id="username-notification" class="hidden"></div>
 
     <input type="text" id="password" name="password" placeholder="Enter your password" maxlength="50">
-    <div id="notification" class="hidden"></div>
+    <div id="password-notification" class="hidden"></div>
 
-    <button id="button" onclick="submitregister()">Submit</button>
+    <button id="button" onclick="submitRegister()">Submit</button>
+    <div id="spinner" class="spinner hidden"></div>
+    <div id="notification" class="hidden"></div>
 
 </body>
 <script>
-    function submitregister(){
-        //window.location.href='/';    -> Launcher download link 
-        showNotification("Website is in Progress!", 'error')
+    function submitRegister() {
+        const email = document.getElementById('email').value;
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+
+        const registerData = { 
+            email: email,
+            username: username,
+            password: password
+        };
+
+        document.getElementById('spinner').classList.remove('hidden');
+
+        fetch("/register", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(registerData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.message) {
+                showNotification(data.message, "success");
+            } else {
+                showNotification(data.error, "error");
+            }
+        })
+        .catch(error => {
+            console.error("Error:", error);
+            showNotification("An error occurred. Please try again.", "error");
+        })
+        .finally(() => {
+            document.getElementById('spinner').classList.add('hidden');
+        });
     }
 
-    const notification = document.getElementById('notification');
-        function showNotification(message, type) {
-            notification.textContent = message;
-            notification.className = `notification ${type}`;
-            setTimeout(() => {
-                notification.className = "notification hidden";
-            }, 3000);
-        }
+    function showNotification(message, type) {
+        const notification = document.getElementById('notification');
+        notification.textContent = message;
+        notification.className = `notification ${type}`;
+        setTimeout(() => {
+            notification.className = "notification hidden";
+        }, 3000);
+    }
 </script>
 </html>
