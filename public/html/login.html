@@ -136,12 +136,22 @@
         },
             body: JSON.stringify(loginData)
         })
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Server error: ${response.status}`);
+            }
+            return response.json();
+        })
         .then(data => {
-            showNotification("Login successful!", "success");
+            if (data.message) {
+                showNotification(data.message, "success");
+            } else {
+                showNotification(data.error, "error");
+            }
         })
         .catch(error => {
             console.error("Error:", error);
+            showNotification("An error occurred. Please try again.", "error");
         })
         .finally(() => {
             document.getElementById('spinner').classList.add('hidden');
