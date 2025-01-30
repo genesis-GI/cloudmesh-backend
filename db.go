@@ -76,7 +76,7 @@ func findByEmail(email string) (bool, string) {
 	if err == mongo.ErrNoDocuments {
 		return false, ""
 	} else if err != nil {
-		log.Printf("Error occurred while finding email: %v\n", err)
+		//log.Printf("Error occurred while finding email: %v\n", err)
 		return false, ""
 	}
 
@@ -97,24 +97,24 @@ func login(req LoginRequest) (bool, string) {
 	}
 	req.Email = strings.TrimSpace(req.Email)
 
-	color.Cyan("[INFO]: Login attempt for email: %s", req.Email)
+	//color.Cyan("[INFO]: Login attempt for email: %s", req.Email)
 	var account Account
 	filter := bson.D{{Key: "email", Value: req.Email}}
 	err := accounts.FindOne(context.TODO(), filter).Decode(&account)
 
 	// Password checks
 	if err == mongo.ErrNoDocuments {
-		log.Printf("Login attempt for non-existent email: %s\n", req.Email)
+		//log.Printf("Login attempt for non-existent email: %s\n", req.Email)
 		return false, "Invalid email or password"
 	} else if err != nil {
-		log.Printf("Database error during login for email %s: %v\n", req.Email, err)
+		//log.Printf("Database error during login for email %s: %v\n", req.Email, err)
 		return false, "An error occurred. Please try again later."
 	}
 
 	// Check if passwords match
 	if !CheckPasswordHash(req.Password, account.Password) {
 
-		log.Printf("Invalid password attempt for email: %s\n", req.Email)
+		//log.Printf("Invalid password attempt for email: %s\n", req.Email)
 		return false, "Invalid email or password"
 	}
 
