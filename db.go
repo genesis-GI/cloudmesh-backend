@@ -15,6 +15,12 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+func isValidUsername(username string) bool {
+    // Define a regex pattern for valid usernames (e.g., alphanumeric characters)
+    var validUsernamePattern = regexp.MustCompile(`^[a-zA-Z0-9]+$`)
+    return validUsernamePattern.MatchString(username)
+}
+
 var accounts *mongo.Collection
 
 func initDB() error {
@@ -186,6 +192,9 @@ func register(email, username, password string) (bool, string) {
 }
 
 func findByUsername(username string) (bool, string) {
+    if !isValidUsername(username) {
+        return false, "Invalid username format"
+    }
     filter := bson.M{"username": username}
     var result bson.M
     err := accounts.FindOne(context.TODO(), filter).Decode(&result)
