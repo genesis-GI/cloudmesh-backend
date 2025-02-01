@@ -23,6 +23,6 @@ func newshandler(c *gin.Context){
 	c.File("public/html/news.html")
 }
 
-func errorHandler(c *gin.Context){
+func noRouteHandler(c *gin.Context){
 	c.File("public/html/error.html")
 }
