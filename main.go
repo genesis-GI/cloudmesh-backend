@@ -99,6 +99,16 @@ func main() {
 		infoHandler(c)
 	})
 
+	r.GET("/versions/:email", func(c *gin.Context){
+		getVersions(c)
+	})
+
+	r.GET("/allVersions", func(c *gin.Context){
+		c.JSON(200, gin.H{
+			
+		})
+	})
+
 	r.NoRoute(func (c *gin.Context){
 		noRouteHandler(c)
 	})
