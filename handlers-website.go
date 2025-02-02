@@ -1,6 +1,8 @@
 package main
 
-import(
+import (
+	"net/http"
+	"os"
 	"github.com/gin-gonic/gin"
 )
 
@@ -24,7 +26,12 @@ func newsHandler(c *gin.Context){
 }
 
 func noRouteHandler(c *gin.Context){
-	c.File("public/html/error.html")
+	htmlContent, err := os.ReadFile("public/html/error.html")
+	if err != nil {
+		c.String(http.StatusInternalServerError, "Error loading the page")
+		return
+	}
+	c.Data(http.StatusNotFound, "text/html; charset=utf-8", htmlContent)
 }
 
 func infoHandler(c *gin.Context){
