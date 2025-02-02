@@ -49,7 +49,7 @@ func initDB() error {
 	}
 
 	accounts = client.Database("genesis").Collection("accounts")
-	color.Green("[✓ SUCCESS] DB initiated successfully")
+	color.Green("[✓ SUCCESS] Connected to DB successfully!")
 	return nil
 }
 
