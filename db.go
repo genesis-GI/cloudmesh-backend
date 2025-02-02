@@ -26,7 +26,7 @@ var accounts *mongo.Collection
 func initDB() error {
 
 	var clientOptions *options.ClientOptions
-	if useRemoteDB == false{
+	if !useRemoteDB {
 		color.Cyan("[INFO]: Connecting to local db...")
 		clientOptions = options.Client().ApplyURI("mongodb://localhost:27017")
 	}else{
@@ -95,28 +95,6 @@ func findByEmail(email string) (bool, string) {
 	return true, string(jsonData)
 }
 
-func findByEmailOrUsername(email, username string) (bool, string) {
-    filter := bson.M{
-        "$or": []bson.M{
-            {"email": email},
-            {"username": username},
-        },
-    }
-    var result bson.M
-    err := accounts.FindOne(context.TODO(), filter).Decode(&result)
-    if err == mongo.ErrNoDocuments {
-        return false, ""
-    } else if err != nil {
-        return false, ""
-    }
-    jsonData, err := json.Marshal(result)
-    if err != nil {
-        log.Printf("Error converting document to JSON: %v\n", err)
-        return false, ""
-    }
-    return true, string(jsonData)
-}
-
 func login(req LoginRequest) (bool, string) {
 	// Check if email is in a valid format -> No 'SQL' injection
 	if !isValidEmail(req.Email) {
@@ -124,24 +102,22 @@ func login(req LoginRequest) (bool, string) {
 	}
 	req.Email = strings.TrimSpace(req.Email)
 
-	//color.Cyan("[INFO]: Login attempt for email: %s", req.Email)
+
 	var account Account
 	filter := bson.D{{Key: "email", Value: req.Email}}
 	err := accounts.FindOne(context.TODO(), filter).Decode(&account)
 
 	// Password checks
 	if err == mongo.ErrNoDocuments {
-		//log.Printf("Login attempt for non-existent email: %s\n", req.Email)
+
 		return false, "Invalid email or password"
 	} else if err != nil {
-		//log.Printf("Database error during login for email %s: %v\n", req.Email, err)
+
 		return false, "An error occurred. Please try again later."
 	}
 
 	// Check if passwords match
 	if !CheckPasswordHash(req.Password, account.Password) {
-
-		//log.Printf("Invalid password attempt for email: %s\n", req.Email)
 		return false, "Invalid email or password"
 	}
 
