@@ -95,7 +95,10 @@ func main() {
 		}
 	})
 
-	
+	r.GET("/connection/info", func(c *gin.Context){
+		infoHandler(c)
+	})
+
 	r.NoRoute(func (c *gin.Context){
 		noRouteHandler(c)
 	})
