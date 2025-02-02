@@ -57,11 +57,11 @@ func main() {
 
 
 	r.GET("/register", func(c *gin.Context){
-		regsiterWebsiteHandler(c)
+		registerWebsiteHandler(c)
 	})
 
 	r.GET("/news", func(c *gin.Context){
-		newshandler(c)
+		newsHandler(c)
 	})
 
 
@@ -97,7 +97,7 @@ func main() {
 
 	
 	r.NoRoute(func (c *gin.Context){
-		errorHandler(c)
+		noRouteHandler(c)
 	})
 	
 

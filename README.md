@@ -1,5 +1,5 @@
 # Cloudmesh-backend
-This is the backend for cloudmesh. Websites, acccount system etc.
+This is the backend for cloudmesh. Websites, account system etc.
 
 [![CodeQL Advanced analysis](https://github.com/genesis-GI/cloudmesh-backend/actions/workflows/codeql.yml/badge.svg)](https://github.com/genesis-GI/cloudmesh-backend/actions/workflows/codeql.yml)
 
