@@ -39,13 +39,13 @@ func initDB() error {
 	client, err = mongo.Connect(context.TODO(), clientOptions)
 	if err != nil {
 		color.Red("[✗ FAILURE] Failed to connect to the database")
-		return fmt.Errorf("Failed to connect to the database: %w", err)
+		return err
 	}
 
 	err = client.Ping(context.TODO(), nil)
 	if err != nil {
 		color.Red("[✗ FAILURE] Database is unavailable")
-		return fmt.Errorf("Database is unavailable: %w", err)
+		return err
 	}
 
 	accounts = client.Database("genesis").Collection("accounts")
