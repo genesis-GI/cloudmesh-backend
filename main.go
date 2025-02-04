@@ -86,7 +86,7 @@ func main() {
 	})
 
 	r.GET("/versions/:email", func(c *gin.Context){
-		if gin.Mode() == gin.ReleaseMode {
+		if isDbEnabled {
 			getVersions(c)
 		}else {
 			c.String(503, "Service only available with DB enabled!")
