@@ -3,6 +3,7 @@ package main
 import (
 	"os"
 	"strings"
+	"time"
 
 	"github.com/fatih/color"
 	"github.com/gin-gonic/gin"
@@ -93,6 +94,24 @@ func main() {
 		}
 	})
 
+
+	r.POST("/motd/:motd", func(c *gin.Context){
+		newMotd := c.Param("motd")
+		currentTime := time.Now()
+		success, msg := setMOTD(newMotd, currentTime)
+		if !success{
+			c.String(500, msg)
+		}
+		c.String(200, msg)
+	})
+
+	r.GET("/motd", func(c *gin.Context){
+		current, lastupdate := getMOTD()
+		c.JSON(200, gin.H{
+			"message": current,
+			"timestamp":lastupdate,
+		})
+	})
 
 	r.NoRoute(func (c *gin.Context){
 		noRouteHandler(c)

@@ -1,35 +1,205 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cloudmesh -> Login</title>
-    <link rel="stylesheet" href="/css/styles.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cloudmesh → Login</title>
+  <!-- Import a modern Google Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap"
+    rel="stylesheet"
+  />
+  <style>
+    /* CSS Variables for dark theming */
+    :root {
+      --primary-color: #0f0f0f;       /* near black */
+      --secondary-color: #1e1e1e;     /* dark gray */
+      --accent-color: #3a3a3a;        /* lighter accent for hover states */
+      --text-color: #ffffff;
+      --notification-bg: rgba(0, 0, 0, 0.8);
+      --font-family: 'Poppins', sans-serif;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: var(--font-family);
+      background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+      color: var(--text-color);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    /* Navbar styling */
+    .navbar {
+      list-style: none;
+      display: flex;
+      justify-content: center;
+      background: rgba(0, 0, 0, 0.7);
+      padding: 1rem;
+      position: fixed;
+      width: 100%;
+      top: 0;
+      z-index: 10;
+      backdrop-filter: blur(5px);
+    }
+    
+    .navbar li {
+      margin: 0 1rem;
+    }
+    
+    .navbar a {
+      text-decoration: none;
+      color: var(--text-color);
+      font-weight: 600;
+      transition: color 0.3s ease;
+    }
+    
+    .navbar a:hover {
+      color: var(--accent-color);
+    }
+    
+    /* Notification styling */
+    #notification {
+      position: fixed;
+      top: 80px;
+      right: 20px;
+      background: var(--notification-bg);
+      padding: 1rem 1.5rem;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+      z-index: 20;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.5s ease;
+    }
+    
+    #notification.notification {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    
+    /* Main content container */
+    .container {
+      margin-top: 120px; /* to avoid navbar */
+      padding: 2rem;
+      text-align: center;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    #motdText {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+    
+    #motdTimestamp {
+      font-size: 1rem;
+      color: #cccccc;
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 600px) {
+      .navbar {
+        flex-direction: column;
+      }
+    
+      .navbar li {
+        margin: 0.5rem 0;
+      }
+    
+      #motdText {
+        font-size: 2rem;
+      }
+    }
+  </style>
 </head>
 <body>
-    <ul class="navbar">
-        <li><a href="/">Home</a></li>
-        <li><a href='/download/launcher'>Download</a></li>
-        <li><a href="/news">News</a></li>
-        <li><a href="/login">Login</a></li>
-        <li><a href="/register">Register</a></li>
-    </ul>
-    <div id="notification" class="hidden"></div>
+  <ul class="navbar">
+    <li><a href="/">Home</a></li>
+    <li><a href="/download/launcher">Download</a></li>
+    <li><a href="/news">News</a></li>
+    <li><a href="/login">Login</a></li>
+    <li><a href="/register">Register</a></li>
+  </ul>
+  
+  <div id="notification" class="hidden"></div>
 
-    <div>
+  <div class="container">
+    <h2 id="motdTimestamp">Loading...</h2>
+    <h1 id="motdText">Loading...</h1>
+  </div>
 
-    </div>
-</body>
-<script>
+  <script>
     const notification = document.getElementById('notification');
+    const motd = document.getElementById('motdText');
+    const motdTime = document.getElementById('motdTimestamp');
+
+    // Global variable to hold the fetched timestamp (as a string)
+    let fetchedTimestamp;
+
+    async function fetchMOTD() {
+      try {
+        const response = await fetch('/motd');
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        const data = await response.json();
+
+        // Assuming the JSON response has keys "message" and "timestamp"
+        const motdText = data.message;
+        fetchedTimestamp = data.timestamp;  // e.g. "2025-02-06T12:34:56Z"
+
+        console.log('MOTD Text:', motdText);
+        console.log('MOTD Timestamp:', fetchedTimestamp);
+        
+        motd.innerHTML = motdText;
+
+        // Update the displayed time difference immediately
+        updateTimeDiff(fetchedTimestamp);
+
+        // Recalculate the elapsed time every minute
+        setInterval(() => updateTimeDiff(fetchedTimestamp), 60000);
+      } catch (error) {
+        console.error('Failed to fetch MOTD:', error);
+        showNotification('Failed to load MOTD', 'error');
+        return null;
+      }
+    }
+
+    // Function to update the MOTD time element based on the elapsed time
+    function updateTimeDiff(timestamp) {
+      const past = new Date(timestamp);
+      const now = new Date();
+      const diffMs = now - past;
+
+      if (diffMs < 60000) {
+        motdTime.innerHTML = "a few seconds ago";
+      } else {
+        const minutes = Math.floor(diffMs / 60000);
+        motdTime.innerHTML = minutes + " minute" + (minutes !== 1 ? "s" : "") + " ago";
+      }
+    }
+
+    fetchMOTD();
 
     function showNotification(message, type) {
-        notification.textContent = message;
-        notification.className = `notification ${type}`;
-        setTimeout(() => {
-            notification.className = "notification hidden";
-        }, 3000);
+      notification.textContent = message;
+      notification.className = `notification ${type}`;
+      setTimeout(() => {
+        notification.className = "notification hidden";
+      }, 3000);
     }
-    //showNotification("There are no News yet", "warning")
-</script>
+  </script>
+</body>
 </html>
