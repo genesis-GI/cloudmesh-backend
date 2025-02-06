@@ -8,18 +8,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func POSTregisterHandler(c *gin.Context){
-	email := c.Param("email")
-	username := c.Param("username")
-	password := c.Param("password")
-	success, msg := register(email, username, password)
-
-	if !success{
-		c.String(500,msg)
-	}else{
-		c.String(201, msg)
-	}
-}
 
 func POSTloginHandler(c *gin.Context){
 	var loginReq LoginRequest
@@ -43,5 +31,22 @@ func POSTloginHandler(c *gin.Context){
 		c.JSON(500, gin.H{
 			"error": errMSG,
 		})
+	}
+}
+func POSTregisterHandler(c *gin.Context){
+	var req struct {
+		Email    string `json:"email"`
+		Username string `json:"username"`
+		Password string `json:"password"`
+	}
+	if err := c.BindJSON(&req); err != nil {
+		c.JSON(400, gin.H{"error": "Invalid request"})
+		return
+	}
+	success, message := register(req.Email, req.Username, req.Password)
+	if success {
+		c.JSON(200, gin.H{"message": message})
+	} else {
+		c.JSON(400, gin.H{"error": message})
 	}
 }

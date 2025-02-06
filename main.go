@@ -70,21 +70,7 @@ func main() {
 	})
 
 	r.POST("/register", func(c *gin.Context) {
-		var req struct {
-			Email    string `json:"email"`
-			Username string `json:"username"`
-			Password string `json:"password"`
-		}
-		if err := c.BindJSON(&req); err != nil {
-			c.JSON(400, gin.H{"error": "Invalid request"})
-			return
-		}
-		success, message := register(req.Email, req.Username, req.Password)
-		if success {
-			c.JSON(200, gin.H{"message": message})
-		} else {
-			c.JSON(400, gin.H{"error": message})
-		}
+		POSTregisterHandler(c)
 	})
 
 	r.GET("/ai", func(c *gin.Context){
@@ -95,7 +81,19 @@ func main() {
 		}
 	})
 
-	
+	r.GET("/connection/info", func(c *gin.Context){
+		infoHandler(c)
+	})
+
+	r.GET("/versions/:email", func(c *gin.Context){
+		if isDbEnabled {
+			getVersions(c)
+		}else {
+			c.String(503, "Service only available with DB enabled!")
+		}
+	})
+
+
 	r.NoRoute(func (c *gin.Context){
 		noRouteHandler(c)
 	})

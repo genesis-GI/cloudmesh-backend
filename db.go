@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"log"
 	"regexp"
 	"strings"
@@ -22,6 +21,7 @@ func isValidUsername(username string) bool {
 }
 
 var accounts *mongo.Collection
+var client *mongo.Client
 
 func initDB() error {
 
@@ -34,21 +34,21 @@ func initDB() error {
 		clientOptions = options.Client().ApplyURI("mongodb://81.10.229.31:38128")
 	}
 	
-
-	client, err := mongo.Connect(context.TODO(), clientOptions)
+	var err error
+	client, err = mongo.Connect(context.TODO(), clientOptions)
 	if err != nil {
 		color.Red("[✗ FAILURE] Failed to connect to the database")
-		return fmt.Errorf("Failed to connect to the database: %w", err)
+		return err
 	}
 
 	err = client.Ping(context.TODO(), nil)
 	if err != nil {
 		color.Red("[✗ FAILURE] Database is unavailable")
-		return fmt.Errorf("Database is unavailable: %w", err)
+		return err
 	}
 
 	accounts = client.Database("genesis").Collection("accounts")
-	color.Green("[✓ SUCCESS] DB initiated successfully")
+	color.Green("[✓ SUCCESS] Connected to DB successfully!")
 	return nil
 }
 
