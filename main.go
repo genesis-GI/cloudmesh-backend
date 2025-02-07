@@ -26,8 +26,7 @@ func main() {
 			color.Red("[✗ FAILURE] Invalid argument: %s", input)
 			os.Exit(1)
 		}
-	}else
-	{
+	}else{
 		color.Cyan("[INFO]: No arguments provided")
 		gin.SetMode(gin.ReleaseMode)
 	}
