@@ -47,9 +47,20 @@ func main() {
 		indexHandler(c)
 	})
 
-	r.GET("/download/launcher", func(c* gin.Context){
-		launcherDownloadHandler(c)
-	})
+	download := r.Group("/download")
+	{
+		download.GET("/", func(c *gin.Context){
+			c.JSON(200, gin.H{
+				"!message":"The index route is unused, use rather: ",
+				"Launcher download": "/download/launcher",
+			})
+		})
+
+		download.GET("/launcher", func (c *gin.Context)  {
+			launcherDownloadHandler(c)
+		})
+	}
+
 
 	r.GET("/login", func(c *gin.Context){
 		loginWebsiteHandler(c)
