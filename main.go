@@ -159,7 +159,7 @@ func main() {
 	}
 	environment := os.Getenv("RAILWAY_ENVIRONMENT")
 	if environment != "production" {
-		fmt.Println("Railway environment is not production")
+		fmt.Println("Railway environment is not production, env name: " + environment)
 	}
 	color.Magenta("[Environment]: %s", gin.Mode())
 	color.Green("Server running on http://localhost:8088")
