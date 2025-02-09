@@ -3,6 +3,7 @@ package main
 import (
 	"os"
 	"strings"
+	"time"
 
 	"github.com/fatih/color"
 	"github.com/gin-gonic/gin"
@@ -25,14 +26,35 @@ func main() {
 			color.Red("[✗ FAILURE] Invalid argument: %s", input)
 			os.Exit(1)
 		}
-	}else
-	{
+	}else{
 		color.Cyan("[INFO]: No arguments provided")
 		gin.SetMode(gin.ReleaseMode)
 	}
 	color.Cyan("[INFO]: Starting in %s mode", gin.Mode())	
-	r := gin.Default()
 
+	r := gin.Default()
+	if gin.ReleaseMode == gin.DebugMode {
+		r.SetTrustedProxies([]string{"*"})
+	}else{
+		r.SetTrustedProxies([]string{
+			"173.245.48.0/20",
+			"103.21.244.0/22",
+			"103.22.200.0/22",
+			"103.31.4.0/22",
+			"141.101.64.0/18",
+			"108.162.192.0/18",
+			"190.93.240.0/20",
+			"188.114.96.0/20",
+			"197.234.240.0/22",
+			"198.41.128.0/17",
+			"162.158.0.0/15",
+			"104.16.0.0/13",
+			"104.24.0.0/14",
+			"172.64.0.0/13",
+			"131.0.72.0/22",
+		})
+	}
+	
 	r.GET("/css/styles.css", func(c *gin.Context) {
 		c.File("public/css/styles.css")
 	})
@@ -47,9 +69,20 @@ func main() {
 		indexHandler(c)
 	})
 
-	r.GET("/download/launcher", func(c* gin.Context){
-		launcherDownloadHandler(c)
-	})
+	download := r.Group("/download")
+	{
+		download.GET("/", func(c *gin.Context){
+			c.JSON(200, gin.H{
+				"!message":"The index route is unused, use rather: ",
+				"Launcher download": "/download/launcher",
+			})
+		})
+
+		download.GET("/launcher", func (c *gin.Context)  {
+			launcherDownloadHandler(c)
+		})
+	}
+
 
 	r.GET("/login", func(c *gin.Context){
 		loginWebsiteHandler(c)
@@ -93,6 +126,24 @@ func main() {
 		}
 	})
 
+
+	r.POST("/motd/:motd", func(c *gin.Context){
+		newMotd := c.Param("motd")
+		currentTime := time.Now()
+		success, msg := setMOTD(newMotd, currentTime)
+		if !success{
+			c.String(500, msg)
+		}
+		c.String(200, msg)
+	})
+
+	r.GET("/motd", func(c *gin.Context){
+		current, lastupdate := getMOTD()
+		c.JSON(200, gin.H{
+			"message": current,
+			"timestamp":lastupdate,
+		})
+	})
 
 	r.NoRoute(func (c *gin.Context){
 		noRouteHandler(c)

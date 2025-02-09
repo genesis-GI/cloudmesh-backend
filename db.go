@@ -186,3 +186,43 @@ func findByUsername(username string) (bool, string) {
     }
     return true, string(jsonData)
 }
+
+func setMOTD(text string, currentTime time.Time) (bool, string) {
+	motdCollection := client.Database("genesis").Collection("motd")
+
+	filter := bson.M{"_id": "motd"}
+	update := bson.M{
+		"$set": bson.M{
+			"text": text,
+			"time": currentTime,
+		},
+	}
+
+
+	opts := options.Update().SetUpsert(true)
+	_, err := motdCollection.UpdateOne(context.TODO(), filter, update, opts)
+	if err != nil {
+		return false, "Failed to update MOTD: " + err.Error()
+	}
+	return true, "MOTD updated successfully!"
+}
+
+
+func getMOTD() (string, string) {
+	motdCollection := client.Database("genesis").Collection("motd")
+	filter := bson.M{"_id": "motd"}
+
+	var result struct {
+		Text string    `bson:"text"`
+		Time time.Time `bson:"time"`
+	}
+
+	err := motdCollection.FindOne(context.TODO(), filter).Decode(&result)
+	if err != nil {
+		log.Printf("Failed to retrieve MOTD: %v", err)
+		return "", ""
+	}
+
+	// Format the time as a string, for example in RFC3339 format.
+	return result.Text, result.Time.Format(time.RFC3339)
+}

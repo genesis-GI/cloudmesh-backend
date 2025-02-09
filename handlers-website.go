@@ -40,14 +40,17 @@ func infoHandler(c *gin.Context){
 	method := c.Request.Method
 	uri := c.Request.RequestURI
 	protocol := c.Request.Proto
+	reqBody := c.Request.Body
+	reqHost := c.Request.Host	
 
 	c.JSON(200, gin.H{
-		"Remote": remote,
-		"Client": client,
-		"Method": method,
-		"Protocol": protocol,
+		"Request Host": reqHost,
 		"URI": uri,
+		"Remote IP": remote,
+		"Client IP": client,
+		"Request Method": method,
+		"Request Protocol": protocol,
+		"Request Body": reqBody,
+		"URL": reqHost + uri,
 	})
-
-	//c.String(200, "Remote: "+remote+"\n\nClient: "+client+"\n\nMethod: "+method+"\n\nProtocol: "+protocol+"\n\nURI: "+uri)
 }

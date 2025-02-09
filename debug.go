@@ -1,28 +1,28 @@
 package main
 
-import(
-	"os"
-	"fmt"
+import (
 	"bufio"
+	"fmt"
+	"os"
+	"github.com/fatih/color"
 	"github.com/gin-gonic/gin"
-
 )
 
 func debug(){
 	gin.SetMode(gin.DebugMode)
 
-	fmt.Println("Debug mode enabled!")
+	color.Magenta("[Environment] Debug Mode enabled!")
 	fmt.Println("Do you want to disable database? (y/n)")
 	reader := bufio.NewReader(os.Stdin)
 	input, _ := reader.ReadString('\n')
 	if input == "y\n" || input == "y\r\n" {
-		fmt.Println("Database is disabled.")
+		color.Cyan("[INFO] Database is disabled...")
 		isDbEnabled = false
 	}else{
-		fmt.Println("Do you want to use remote database? (y/n)")
+		fmt.Println("Do you want to use local database? (y/n)")
 		input, _ = reader.ReadString('\n')
-		if input == "n\n" || input == "n\r\n" {
-			fmt.Println("Using local database.")
+		if input == "y\n" || input == "y\r\n" {
+			color.Cyan("[INFO] Using local database...")
 			useRemoteDB = false
 		}
 	}
