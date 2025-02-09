@@ -157,7 +157,10 @@ func main() {
 		}
 	}
 
+           
+
 	color.Magenta("[Environment]: %s", gin.Mode())
 	color.Green("Server running on http://localhost:8088")
+	
 	r.Run(":8088")
 }
