@@ -21,7 +21,7 @@ func getVersions(c *gin.Context){
 		return
 	}
 
-	var versionsCollection *mongo.Collection = client.Database("genesis").Collection("versions")
+	var versionsCollection *mongo.Collection = db.Collection("versions")
 	var result bson.M
 	err = versionsCollection.FindOne(context.TODO(), bson.M{}).Decode(&result)
 	if err != nil {
