@@ -4,9 +4,11 @@ import (
 	"context"
 	"encoding/json"
 	"log"
+	"os"
 	"regexp"
 	"strings"
 	"time"
+
 	"github.com/fatih/color"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -31,9 +33,15 @@ func initDB() error {
 		clientOptions = options.Client().ApplyURI("mongodb://localhost:27017")
 	}else{
 		color.Cyan("[INFO]: Connecting to remote db...")
-		clientOptions = options.Client().ApplyURI("mongodb://81.10.229.31:38128")
+		if os.Getenv("RAILWAY_ENVIRONMENT") == "production" {
+			clientOptions = options.Client().ApplyURI("mongodb://81.10.229.31:38128")
+		}else {
+			clientOptions = options.Client().ApplyURI(os.Getenv("MONGODB_CONNECTION_STRING"))
+		}
 	}
 	
+	
+
 	var err error
 	client, err = mongo.Connect(context.TODO(), clientOptions)
 	if err != nil {
