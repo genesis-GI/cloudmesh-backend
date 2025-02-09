@@ -159,5 +159,7 @@ func main() {
 
 	color.Magenta("[Environment]: %s", gin.Mode())
 	color.Green("Server running on http://localhost:8088")
+	environment := os.Getenv("RAILWAY_ENVIRONMENT")
+	color.Red(environment)
 	r.Run(":8088")
 }
