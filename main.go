@@ -1,7 +1,7 @@
 package main
 
 import (
-
+	"fmt"
 	"os"
 	"strings"
 	"time"
@@ -156,6 +156,10 @@ func main() {
 		if err != nil{
 			panic(err)
 		}
+	}
+	environment := os.Getenv("RAILWAY_ENVIRONMENT")
+	if environment != "production" {
+		fmt.Println("Railway environment is not production")
 	}
 	color.Magenta("[Environment]: %s", gin.Mode())
 	color.Green("Server running on http://localhost:8088")
