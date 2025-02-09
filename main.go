@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+
 	"os"
 	"strings"
 	"time"
@@ -155,13 +155,6 @@ func main() {
 		err := initDB()
 		if err != nil{
 			panic(err)
-		}
-	}
-	railwayEnv := os.Getenv("RAILWAY_ENVIRONMENT")
-	if railwayEnv != "" {
-		color.Cyan("[INFO] Railway Environment%s", railwayEnv)
-		if(railwayEnv == "production"){
-			fmt.Println("Running in production mode on railway")
 		}
 	}
 	color.Magenta("[Environment]: %s", gin.Mode())
