@@ -12,7 +12,7 @@ func getVersions(c *gin.Context){
 	email := c.Param("email")
 
 	var account Account
-	err := accounts.FindOne(context.TODO(), bson.M{"email": email}).Decode(&account)
+	err := db.Collection("accounts").FindOne(context.TODO(), bson.M{"email": email}).Decode(&account)
 	if err == mongo.ErrNoDocuments {
 		c.JSON(404, gin.H{"error": "Account not found"})
 		return

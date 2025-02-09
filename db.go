@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"log"
+	"os"
 	"regexp"
 	"strings"
 	"time"
@@ -21,12 +22,15 @@ func isValidUsername(username string) bool {
     return validUsernamePattern.MatchString(username)
 }
 
-var accounts *mongo.Collection
+var db *mongo.Database
 var client *mongo.Client
 
 func initDB() error {
 
 	var clientOptions *options.ClientOptions
+
+	
+
 	if !useRemoteDB {
 		color.Cyan("[INFO]: Connecting to local db...")
 		clientOptions = options.Client().ApplyURI("mongodb://localhost:27017")
@@ -34,8 +38,6 @@ func initDB() error {
 		color.Cyan("[INFO]: Connecting to remote db...")
 		clientOptions = options.Client().ApplyURI("mongodb://81.10.229.31:38128")
 	}
-	
-	
 
 	var err error
 	client, err = mongo.Connect(context.TODO(), clientOptions)
@@ -50,7 +52,15 @@ func initDB() error {
 		return err
 	}
 
-	accounts = client.Database("genesis").Collection("accounts")
+	rwEnv := os.Getenv("RAILWAY_ENVIRONMENT")
+	if rwEnv == "production" {
+		db = client.Database("genesis")
+		color.Cyan("[INFO]: Connecting to production db...")
+	}else{
+		db = client.Database("genesis-development")
+		color.Cyan("[INFO]: Connecting to development db...")
+	}
+
 	color.Green("[✓ SUCCESS] Connected to DB successfully!")
 	return nil
 }
@@ -81,7 +91,7 @@ func findByEmail(email string) (bool, string) {
 	filter := bson.M{"email": email}
 
 	var result bson.M
-	err := accounts.FindOne(context.TODO(), filter).Decode(&result)
+	err := db.Collection("accounts").FindOne(context.TODO(), filter).Decode(&result)
 	if err == mongo.ErrNoDocuments {
 		return false, ""
 	} else if err != nil {
@@ -108,7 +118,7 @@ func login(req LoginRequest) (bool, string) {
 
 	var account Account
 	filter := bson.D{{Key: "email", Value: req.Email}}
-	err := accounts.FindOne(context.TODO(), filter).Decode(&account)
+	err := db.Collection("accounts").FindOne(context.TODO(), filter).Decode(&account)
 
 	// Password checks
 	if err == mongo.ErrNoDocuments {
@@ -163,7 +173,7 @@ func register(email, username, password string) (bool, string) {
         CreatedAt: time.Now(),
     }
 
-    _, creationErr := accounts.InsertOne(context.TODO(), newAccount)
+    _, creationErr := db.Collection("accounts").InsertOne(context.TODO(), newAccount)
     if creationErr != nil {
         return false, "Failed to register account!"
     }
@@ -176,7 +186,7 @@ func findByUsername(username string) (bool, string) {
     }
     filter := bson.M{"username": username}
     var result bson.M
-    err := accounts.FindOne(context.TODO(), filter).Decode(&result)
+    err := db.Collection("accounts").FindOne(context.TODO(), filter).Decode(&result)
     if err == mongo.ErrNoDocuments {
         return false, ""
     } else if err != nil {
@@ -191,7 +201,7 @@ func findByUsername(username string) (bool, string) {
 }
 
 func setMOTD(text string, currentTime time.Time) (bool, string) {
-	motdCollection := client.Database("genesis").Collection("motd")
+	
 
 	filter := bson.M{"_id": "motd"}
 	update := bson.M{
@@ -203,7 +213,7 @@ func setMOTD(text string, currentTime time.Time) (bool, string) {
 
 
 	opts := options.Update().SetUpsert(true)
-	_, err := motdCollection.UpdateOne(context.TODO(), filter, update, opts)
+	_, err := db.Collection("motd").UpdateOne(context.TODO(), filter, update, opts)
 	if err != nil {
 		return false, "Failed to update MOTD: " + err.Error()
 	}
@@ -212,7 +222,6 @@ func setMOTD(text string, currentTime time.Time) (bool, string) {
 
 
 func getMOTD() (string, string) {
-	motdCollection := client.Database("genesis").Collection("motd")
 	filter := bson.M{"_id": "motd"}
 
 	var result struct {
@@ -220,7 +229,7 @@ func getMOTD() (string, string) {
 		Time time.Time `bson:"time"`
 	}
 
-	err := motdCollection.FindOne(context.TODO(), filter).Decode(&result)
+	err := db.Collection("motd").FindOne(context.TODO(), filter).Decode(&result)
 	if err != nil {
 		log.Printf("Failed to retrieve MOTD: %v", err)
 		return "", ""
