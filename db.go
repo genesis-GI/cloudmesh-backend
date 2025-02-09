@@ -32,8 +32,8 @@ func initDB() error {
 		color.Cyan("[INFO]: Connecting to local db...")
 		clientOptions = options.Client().ApplyURI("mongodb://localhost:27017")
 	}else{
-		color.Cyan("[INFO]: Connecting to remote db...")
 		if os.Getenv("RAILWAY_ENVIRONMENT") == "production" {
+			color.Cyan("[INFO]: Connecting to remote db...")
 			clientOptions = options.Client().ApplyURI("mongodb://81.10.229.31:38128")
 		}else {
 			color.Cyan("[INFO]: Using railway database with URL:"+os.Getenv("MONGODB_CONNECTION_STRING"))
