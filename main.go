@@ -159,7 +159,7 @@ func main() {
 	}
 
 	rwEnv := os.Getenv("RAILWAY_ENVIRONMENT")
-	if rwEnv != "production" {
+	if rwEnv != "production" && rwEnv != "" {
 		fmt.Println("We are running on railway, but not in production mode")
 	}
 
