@@ -19,6 +19,9 @@ const sessionKey = "previewToken"
 
 
 func main() {
+	rwEnv := os.Getenv("RAILWAY_ENVIRONMENT")
+	isProduction := rwEnv == "production"
+
 	if len(os.Args) > 1 {
 		input := os.Args[1]
 		input = strings.ToLower(input)
@@ -38,7 +41,7 @@ func main() {
 
 	r := gin.Default()
 	
-	if os.Getenv("RAILWAY_ENVIRONMENT") != "production"{
+	if rwEnv != "production" && rwEnv != "" {
 		store := cookie.NewStore([]byte("dsoifjdsla823495jreio89xpgjgftzftttrertertecjipx9f"))
 		token := getRandomToken()
 		color.Cyan("[ℹ INFO] Session token: "+token)
@@ -107,7 +110,11 @@ func main() {
 	})
 
 	r.GET("/news", func(c *gin.Context){
-		newsHandler(c)
+		if isProduction {
+			newsHandler(c)
+		}else{
+			c.File("public/html/news-testing.html")
+		}
 	})
 
 
