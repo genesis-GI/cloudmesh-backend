@@ -1,7 +1,7 @@
 package main
 
 import (
-	"net/http"
+
 	"os"
 	"strings"
 	"time"
@@ -126,20 +126,10 @@ func main() {
 		POSTregisterHandler(c)
 	})
 
-	r.GET("/ai", func(c *gin.Context){
-		if gin.Mode() == gin.DebugMode  {
-			c.File("public/html/ai.html")
-		}else{
-			c.String(503, "Service unavailable as the feature is not ready yet!")	
-		}
-	})
-
 
 	r.GET("/connection/info", func(c *gin.Context){
 		infoHandler(c)
 	})
-
-
 
 	r.GET("/versions/:email", func(c *gin.Context){
 		if isDbEnabled {
@@ -168,12 +158,6 @@ func main() {
 		})
 	})
 
-	r.GET("/logout", func(c *gin.Context) {
-		session := sessions.Default(c)
-		session.Clear()
-		session.Save()
-		c.JSON(http.StatusOK, gin.H{"message": "Logged out, session cleared"})
-	})
 
 	r.NoRoute(func (c *gin.Context){
 		noRouteHandler(c)
