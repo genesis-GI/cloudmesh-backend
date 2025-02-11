@@ -32,10 +32,9 @@ func initDB() error {
 	
 
 	if !useRemoteDB {
-		color.Cyan("[INFO]: Connecting to local db...")
+
 		clientOptions = options.Client().ApplyURI("mongodb://localhost:27017")
 	}else{
-		color.Cyan("[INFO]: Connecting to remote db...")
 		clientOptions = options.Client().ApplyURI("mongodb://81.10.229.31:38128")
 	}
 
@@ -55,10 +54,10 @@ func initDB() error {
 	rwEnv := os.Getenv("RAILWAY_ENVIRONMENT")
 	if rwEnv == "production" {
 		db = client.Database("genesis")
-		color.Cyan("[INFO]: Connecting to production db...")
+		color.Yellow("[↻ Status]: Connecting to production db...")
 	}else{
 		db = client.Database("genesis-development")
-		color.Cyan("[INFO]: Connecting to development db...")
+		color.Yellow("[↻ Status]: Connecting to development db...")
 	}
 
 	color.Green("[✓ SUCCESS] Connected to DB successfully!")

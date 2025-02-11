@@ -1,19 +1,49 @@
 package main
 
 import (
+	"net/http"
 	"os"
 	"strings"
 	"time"
 
 	"github.com/fatih/color"
+	"github.com/gin-contrib/sessions"
+	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
 )
 
 
 var useRemoteDB bool = true
 var isDbEnabled bool = true
-func main() {
+const validToken = "xyz123"
+const sessionKey = "previewToken"
 
+func tokenSessionMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		session := sessions.Default(c)
+
+		// Wenn im Query ein Token übergeben wird, speichern wir ihn in der Session
+		queryToken := c.Query("previewToken")
+		if queryToken != "" {
+			session.Set(sessionKey, queryToken)
+			session.Save()
+		}
+
+		// Lese den Token aus der Session
+		token := session.Get(sessionKey)
+		if token == nil || token != validToken {
+			c.JSON(http.StatusForbidden, gin.H{"error": "Access Denied"})
+			c.Abort()
+			return
+		}
+
+		// Optional: Token im Context speichern, falls benötigt
+		c.Set(sessionKey, token)
+		c.Next()
+	}
+}
+
+func main() {
 	if len(os.Args) > 1 {
 		input := os.Args[1]
 		input = strings.ToLower(input)
@@ -27,12 +57,20 @@ func main() {
 			os.Exit(1)
 		}
 	}else{
-		color.Cyan("[INFO]: No arguments provided")
 		gin.SetMode(gin.ReleaseMode)
 	}
-	color.Cyan("[INFO]: Starting in %s mode", gin.Mode())	
+	color.Cyan("[ℹ INFO]: Starting in %s mode", gin.Mode())	
 
 	r := gin.Default()
+	
+	if os.Getenv("RAILWAY_ENVIRONMENT") != "production"{
+		store := cookie.NewStore([]byte("dsoifjdsla823495jreio89xpgjgftzftttrertertecjipx9f"))
+		token := getRandomToken()
+		color.Cyan("[ℹ INFO] Session token: "+token)
+		r.Use(sessions.Sessions(token, store))
+		r.Use(tokenSessionMiddleware())
+	}
+
 	if gin.ReleaseMode == gin.DebugMode {
 		r.SetTrustedProxies([]string{"*"})
 	}else{
@@ -114,9 +152,12 @@ func main() {
 		}
 	})
 
+
 	r.GET("/connection/info", func(c *gin.Context){
 		infoHandler(c)
 	})
+
+
 
 	r.GET("/versions/:email", func(c *gin.Context){
 		if isDbEnabled {
@@ -145,6 +186,13 @@ func main() {
 		})
 	})
 
+	r.GET("/logout", func(c *gin.Context) {
+		session := sessions.Default(c)
+		session.Clear()
+		session.Save()
+		c.JSON(http.StatusOK, gin.H{"message": "Logged out, session cleared"})
+	})
+
 	r.NoRoute(func (c *gin.Context){
 		noRouteHandler(c)
 	})
@@ -159,8 +207,8 @@ func main() {
 
            
 
-	color.Magenta("[Environment]: %s", gin.Mode())
-	color.Green("Server running on http://localhost:8088")
+	color.Magenta("[⚙ Environment]: %s", gin.Mode())
+	color.Green("[✓ SUCCESS] Started Server successfully on http://localhost:8088")
 	
 	r.Run(":8088")
 }
