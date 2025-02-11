@@ -5,7 +5,6 @@ import (
 	"os"
 	"strings"
 	"time"
-
 	"github.com/fatih/color"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
@@ -18,30 +17,6 @@ var isDbEnabled bool = true
 const validToken = "xyz123"
 const sessionKey = "previewToken"
 
-func tokenSessionMiddleware() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		session := sessions.Default(c)
-
-		// Wenn im Query ein Token übergeben wird, speichern wir ihn in der Session
-		queryToken := c.Query("previewToken")
-		if queryToken != "" {
-			session.Set(sessionKey, queryToken)
-			session.Save()
-		}
-
-		// Lese den Token aus der Session
-		token := session.Get(sessionKey)
-		if token == nil || token != validToken {
-			c.JSON(http.StatusForbidden, gin.H{"error": "Access Denied"})
-			c.Abort()
-			return
-		}
-
-		// Optional: Token im Context speichern, falls benötigt
-		c.Set(sessionKey, token)
-		c.Next()
-	}
-}
 
 func main() {
 	if len(os.Args) > 1 {
