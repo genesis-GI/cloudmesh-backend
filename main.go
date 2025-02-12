@@ -76,7 +76,7 @@ func main() {
 	})
 
 	r.GET("/news", func(c *gin.Context){
-		if isProduction {
+		if c.Query("newPage") != "true"{
 			newsHandler(c)
 		}else{
 			c.File("public/html/news-testing.html")
@@ -97,7 +97,7 @@ func main() {
 		infoHandler(c)
 	})
 
-	r.GET("/versions/:email", func(c *gin.Context){
+	r.GET("/versions/:game/:email", func(c *gin.Context){
 		if isDbEnabled {
 			getVersions(c)
 		}else {
