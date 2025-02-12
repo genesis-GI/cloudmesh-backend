@@ -126,6 +126,10 @@
       editModal.style.display = 'none';
     });
 
+    function parseMarkdownLinks(text) {
+      const linkRegex = /\[([^\]]+)\]\(([^)]+)\)/g;
+      return text.replace(linkRegex, '<a href="$2" target="_blank">$1</a>');
+    }
 
     saveMOTDButton.addEventListener('click', async () => {
       const updatedText = editMOTDInput.value;
@@ -136,20 +140,27 @@
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
-        motd.innerHTML = updatedText.replace(/\n/g, '<br>');
+        const parsedMarkdown = parseMarkdownLinks(updatedText).replace(/\n/g, '<br>');
+        motd.innerHTML = parsedMarkdown;
         showNotification('MOTD updated successfully!', 'success');
-     } catch (err) {
+      } catch (err) {
         showNotification('Error updating MOTD', 'error');
       }
       editModal.style.display = 'none';
-      });
+    });
 
-      const ws = new WebSocket("ws://localhost:8088/ws");
+    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const hostname = window.location.hostname;
+    const port = window.location.port ? `:${window.location.port}` : '';
+    const wsUrl = `${protocol}//${hostname}${port}/ws`;
+    const ws = new WebSocket(wsUrl);
 
     ws.onmessage = (event) => {
       const [first, second] = event.data.split("!:timeSPLIT:!");
         if(motdText != first){
-          motdText.innerHTML = first;
+          // Convert possible markdown links to clickable links
+          const parsedMarkdown = parseMarkdownLinks(first).replace(/\n/g, '<br>');
+          motdText.innerHTML = parsedMarkdown;
           updateTimeDiff(second);
         }
     };
