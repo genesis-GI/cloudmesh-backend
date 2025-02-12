@@ -76,7 +76,7 @@ func main() {
 	})
 
 	r.GET("/news", func(c *gin.Context){
-		if c.Query("newPage") != "true"{
+		if c.Query("newPage") != "true" && isProduction{
 			newsHandler(c)
 		}else{
 			c.File("public/html/news-testing.html")
