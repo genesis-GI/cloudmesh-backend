@@ -106,16 +106,28 @@ func main() {
 	})
 
 
-	r.POST("/motd/:motd", func(c *gin.Context){
-		newMotd := c.Param("motd")
+	r.POST("/motd", func(c *gin.Context) {
+		// Define a struct to match the JSON we expect in the body
+		type MotdRequest struct {
+			Message string `json:"message"`
+		}
+
+		var req MotdRequest
+		if err := c.BindJSON(&req); err != nil {
+			c.String(400, "Failed to parse JSON data: %v", err)
+			return
+		}
+
+		newMotd := req.Message
 		currentTime := time.Now()
 		success, msg := setMOTD(newMotd, currentTime)
-		if !success{
+		if !success {
 			c.String(500, msg)
+			return
 		}
 		c.String(200, msg)
 	})
-
+	
 	r.GET("/motd", func(c *gin.Context){
 		current, lastupdate := getMOTD()
 		c.JSON(200, gin.H{
