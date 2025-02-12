@@ -97,7 +97,7 @@ func main() {
 		infoHandler(c)
 	})
 
-	r.GET("/versions/:email", func(c *gin.Context){
+	r.GET("/versions/:game/:email", func(c *gin.Context){
 		if isDbEnabled {
 			getVersions(c)
 		}else {
