@@ -1,11 +1,10 @@
 package main
 
 import (
-	"net/http"
-	"os"
-	"strings"
-	"time"
 
+	"os"
+
+	"time"
 	"github.com/fatih/color"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
@@ -18,52 +17,18 @@ var isDbEnabled bool = true
 const validToken = "xyz123"
 const sessionKey = "previewToken"
 
-func tokenSessionMiddleware() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		session := sessions.Default(c)
-
-		// Wenn im Query ein Token übergeben wird, speichern wir ihn in der Session
-		queryToken := c.Query("previewToken")
-		if queryToken != "" {
-			session.Set(sessionKey, queryToken)
-			session.Save()
-		}
-
-		// Lese den Token aus der Session
-		token := session.Get(sessionKey)
-		if token == nil || token != validToken {
-			c.JSON(http.StatusForbidden, gin.H{"error": "Access Denied"})
-			c.Abort()
-			return
-		}
-
-		// Optional: Token im Context speichern, falls benötigt
-		c.Set(sessionKey, token)
-		c.Next()
-	}
-}
 
 func main() {
-	if len(os.Args) > 1 {
-		input := os.Args[1]
-		input = strings.ToLower(input)
+	rwEnv := os.Getenv("RAILWAY_ENVIRONMENT")
+	isProduction := rwEnv == "production"
+	isLocal := rwEnv == ""
 
-		if input == "debug" {
-			debug()
-			gin.SetMode(gin.DebugMode)
-			
-		}else {
-			color.Red("[✗ FAILURE] Invalid argument: %s", input)
-			os.Exit(1)
-		}
-	}else{
-		gin.SetMode(gin.ReleaseMode)
-	}
-	color.Cyan("[ℹ INFO]: Starting in %s mode", gin.Mode())	
+	getParameters()
+	color.Cyan("[ℹ INFO]: Starting *gin* in %s mode", gin.Mode())	
 
 	r := gin.Default()
 	
-	if os.Getenv("RAILWAY_ENVIRONMENT") != "production"{
+	if !isProduction && !isLocal {
 		store := cookie.NewStore([]byte("dsoifjdsla823495jreio89xpgjgftzftttrertertecjipx9f"))
 		token := getRandomToken()
 		color.Cyan("[ℹ INFO] Session token: "+token)
@@ -71,27 +36,6 @@ func main() {
 		r.Use(tokenSessionMiddleware())
 	}
 
-	if gin.ReleaseMode == gin.DebugMode {
-		r.SetTrustedProxies([]string{"*"})
-	}else{
-		r.SetTrustedProxies([]string{
-			"173.245.48.0/20",
-			"103.21.244.0/22",
-			"103.22.200.0/22",
-			"103.31.4.0/22",
-			"141.101.64.0/18",
-			"108.162.192.0/18",
-			"190.93.240.0/20",
-			"188.114.96.0/20",
-			"197.234.240.0/22",
-			"198.41.128.0/17",
-			"162.158.0.0/15",
-			"104.16.0.0/13",
-			"104.24.0.0/14",
-			"172.64.0.0/13",
-			"131.0.72.0/22",
-		})
-	}
 	
 	r.GET("/css/styles.css", func(c *gin.Context) {
 		c.File("public/css/styles.css")
@@ -132,7 +76,11 @@ func main() {
 	})
 
 	r.GET("/news", func(c *gin.Context){
-		newsHandler(c)
+		if isProduction {
+			newsHandler(c)
+		}else{
+			c.File("public/html/news-testing.html")
+		}
 	})
 
 
@@ -144,20 +92,10 @@ func main() {
 		POSTregisterHandler(c)
 	})
 
-	r.GET("/ai", func(c *gin.Context){
-		if gin.Mode() == gin.DebugMode  {
-			c.File("public/html/ai.html")
-		}else{
-			c.String(503, "Service unavailable as the feature is not ready yet!")	
-		}
-	})
-
 
 	r.GET("/connection/info", func(c *gin.Context){
 		infoHandler(c)
 	})
-
-
 
 	r.GET("/versions/:email", func(c *gin.Context){
 		if isDbEnabled {
@@ -186,12 +124,6 @@ func main() {
 		})
 	})
 
-	r.GET("/logout", func(c *gin.Context) {
-		session := sessions.Default(c)
-		session.Clear()
-		session.Save()
-		c.JSON(http.StatusOK, gin.H{"message": "Logged out, session cleared"})
-	})
 
 	r.NoRoute(func (c *gin.Context){
 		noRouteHandler(c)
@@ -207,7 +139,14 @@ func main() {
 
            
 
-	color.Magenta("[⚙ Environment]: %s", gin.Mode())
+	/* color.Magenta("[⚙ Gin Environment]: %s", gin.Mode()) */
+	if isLocal{
+		color.Magenta("[⚙ RW Environment]: Local development")
+
+	}else{
+		color.Magenta("[⚙ RW Environment]: %s", rwEnv)
+
+	}
 	color.Green("[✓ SUCCESS] Started Server successfully on http://localhost:8088")
 	
 	r.Run(":8088")

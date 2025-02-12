@@ -6,6 +6,7 @@ import (
 	"os"
 	"github.com/fatih/color"
 	"github.com/gin-gonic/gin"
+	"strings"
 )
 
 func debug(){
@@ -27,3 +28,21 @@ func debug(){
 		}
 	}
 } 
+
+func getParameters() {
+	if len(os.Args) > 1 {
+		input := os.Args[1]
+		input = strings.ToLower(input)
+
+		if input == "debug" {
+			debug()
+			gin.SetMode(gin.DebugMode)
+			
+		}else {
+			color.Red("[✗ FAILURE] Invalid argument: %s", input)
+			os.Exit(1)
+		}
+	}else{
+		gin.SetMode(gin.ReleaseMode)
+	}
+}
