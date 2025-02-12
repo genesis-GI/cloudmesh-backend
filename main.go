@@ -136,7 +136,7 @@ func main() {
 			panic(err)
 		}
 	}
-
+	r.GET("/ws", wsHandler)
            
 
 	/* color.Magenta("[⚙ Gin Environment]: %s", gin.Mode()) */
