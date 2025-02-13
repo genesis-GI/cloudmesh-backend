@@ -19,16 +19,15 @@ const sessionKey = "previewToken"
 var validToken string
 
 func main() {
-	
 	rwPreviewToken := os.Getenv("validToken")
 	rwEnv := os.Getenv("RAILWAY_ENVIRONMENT")
 	isProduction := rwEnv == "production"
 	isLocal := rwEnv == ""
 
-	if(rwPreviewToken != ""){
+	if rwPreviewToken != "" && !isProduction{
 		validToken = rwPreviewToken
 		color.Cyan("Preview Token: "+validToken)
-	}else if !isLocal{
+	}else {
 		validToken = "xyz123"
 		color.Cyan("Preview Token: "+validToken)
 	}
