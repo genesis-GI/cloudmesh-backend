@@ -11,12 +11,11 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-
 var useRemoteDB bool = true
 var isDbEnabled bool = true
+
 const validToken = "xyz123"
 const sessionKey = "previewToken"
-
 
 func main() {
 	rwEnv := os.Getenv("RAILWAY_ENVIRONMENT")
@@ -24,67 +23,61 @@ func main() {
 	isLocal := rwEnv == ""
 
 	getParameters()
-	color.Cyan("[ℹ INFO]: Starting *gin* in %s mode", gin.Mode())	
+	color.Cyan("[ℹ INFO]: Starting *gin* in %s mode", gin.Mode())
 
 	r := gin.Default()
-	
+
 	if !isProduction && !isLocal {
 		store := cookie.NewStore([]byte("dsoifjdsla823495jreio89xpgjgftzftttrertertecjipx9f"))
 		token := getRandomToken()
-		color.Cyan("[ℹ INFO] Session token: "+token)
+		color.Cyan("[ℹ INFO] Session token: " + token)
 		r.Use(sessions.Sessions(token, store))
 		r.Use(tokenSessionMiddleware())
 	}
 
-	
 	r.GET("/css/styles.css", func(c *gin.Context) {
 		c.File("public/css/styles.css")
 	})
 
-	r.GET("/favicon.ico", func(c * gin.Context){
+	r.GET("/favicon.ico", func(c *gin.Context) {
 		c.String(200, "There is no icon currently!")
 	})
 
-
-	
-	r.GET("/", func(c *gin.Context){
+	r.GET("/", func(c *gin.Context) {
 		indexHandler(c)
 	})
 
 	download := r.Group("/download")
 	{
-		download.GET("/", func(c *gin.Context){
+		download.GET("/", func(c *gin.Context) {
 			c.JSON(200, gin.H{
-				"!message":"The index route is unused, use rather: ",
+				"!message":          "The index route is unused, use rather: ",
 				"Launcher download": "/download/launcher",
 			})
 		})
 
-		download.GET("/launcher", func (c *gin.Context)  {
+		download.GET("/launcher", func(c *gin.Context) {
 			launcherDownloadHandler(c)
 		})
 	}
 
-
-	r.GET("/login", func(c *gin.Context){
+	r.GET("/login", func(c *gin.Context) {
 		loginWebsiteHandler(c)
 	})
 
-
-	r.GET("/register", func(c *gin.Context){
+	r.GET("/register", func(c *gin.Context) {
 		registerWebsiteHandler(c)
 	})
 
-	r.GET("/news", func(c *gin.Context){
-		if c.Query("newPage") != "true" && isProduction{
+	r.GET("/news", func(c *gin.Context) {
+		if c.Query("editMOTD") != "true" && isProduction {
 			newsHandler(c)
-		}else{
-			c.File("public/html/news-testing.html")
+		} else {
+			c.File("public/html/news-motd-editable.html")
 		}
 	})
 
-
-	r.POST("/login", func(c *gin.Context){
+	r.POST("/login", func(c *gin.Context) {
 		POSTloginHandler(c)
 	})
 
@@ -92,19 +85,17 @@ func main() {
 		POSTregisterHandler(c)
 	})
 
-
-	r.GET("/connection/info", func(c *gin.Context){
+	r.GET("/connection/info", func(c *gin.Context) {
 		infoHandler(c)
 	})
 
-	r.GET("/versions/:email/:game", func(c *gin.Context){
+	r.GET("/versions/:email/:game", func(c *gin.Context) {
 		if isDbEnabled {
 			getVersions(c)
-		}else {
+		} else {
 			c.String(503, "Service only available with DB enabled!")
 		}
 	})
-
 
 	r.POST("/motd", func(c *gin.Context) {
 		type MotdRequest struct {
@@ -126,40 +117,36 @@ func main() {
 		}
 		c.String(200, msg)
 	})
-	
-	r.GET("/motd", func(c *gin.Context){
+
+	r.GET("/motd", func(c *gin.Context) {
 		current, lastupdate := getMOTD()
 		c.JSON(200, gin.H{
-			"message": current,
-			"timestamp":lastupdate,
+			"message":   current,
+			"timestamp": lastupdate,
 		})
 	})
 
-
-	r.NoRoute(func (c *gin.Context){
+	r.NoRoute(func(c *gin.Context) {
 		noRouteHandler(c)
 	})
-	
 
 	if isDbEnabled {
 		err := initDB()
-		if err != nil{
+		if err != nil {
 			panic(err)
 		}
 	}
 
 	r.GET("/ws", wsHandler)
-           
 
-
-	if isLocal{
+	if isLocal {
 		color.Magenta("[⚙ RW Environment]: Local development")
 
-	}else{
+	} else {
 		color.Magenta("[⚙ RW Environment]: %s", rwEnv)
 
 	}
 	color.Green("[✓ SUCCESS] Started Server successfully on http://localhost:8088")
-	
+
 	r.Run(":8088")
 }
