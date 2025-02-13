@@ -14,14 +14,24 @@ import (
 
 var useRemoteDB bool = true
 var isDbEnabled bool = true
-const validToken = "xyz123"
 const sessionKey = "previewToken"
 
+var validToken string
 
 func main() {
+	
+	rwPreviewToken := os.Getenv("validToken")
 	rwEnv := os.Getenv("RAILWAY_ENVIRONMENT")
 	isProduction := rwEnv == "production"
 	isLocal := rwEnv == ""
+
+	if(rwPreviewToken != ""){
+		validToken = rwPreviewToken
+		color.Cyan("Preview Token: "+validToken)
+	}else if !isLocal{
+		validToken = "xyz123"
+		color.Cyan("Preview Token: "+validToken)
+	}
 
 	getParameters()
 	color.Cyan("[ℹ INFO]: Starting *gin* in %s mode", gin.Mode())	
@@ -147,7 +157,7 @@ func main() {
 			panic(err)
 		}
 	}
-	
+
 	r.GET("/ws", wsHandler)
            
 
