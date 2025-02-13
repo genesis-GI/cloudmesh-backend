@@ -14,24 +14,14 @@ import (
 
 var useRemoteDB bool = true
 var isDbEnabled bool = true
+const validToken = "xyz123"
 const sessionKey = "previewToken"
 
-var validToken string
 
 func main() {
-	rwPreviewToken := os.Getenv("validToken")
 	rwEnv := os.Getenv("RAILWAY_ENVIRONMENT")
 	isProduction := rwEnv == "production"
 	isLocal := rwEnv == ""
-
-	if rwPreviewToken != "" && !isProduction{
-		validToken = rwPreviewToken
-		color.Cyan("Preview Token: "+validToken)
-	}else {
-		validToken = "xyz123"
-		color.Cyan("Preview Token: "+validToken)
-		color.Cyan("[main.go debugging INFO]Searched for 'validToken', found:"+rwPreviewToken)
-	}
 
 	getParameters()
 	color.Cyan("[ℹ INFO]: Starting *gin* in %s mode", gin.Mode())	
