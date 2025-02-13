@@ -10,11 +10,10 @@ import (
 
 var upgrader = websocket.Upgrader{
 	CheckOrigin: func(r *http.Request) bool {
-		return true // Erlaubt alle Verbindungen (ändere das für Sicherheit)
+		return true 
 	},
 }
 
-// Handler für WebSocket-Verbindungen
 func wsHandler(c *gin.Context) {
 	conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
 	if err != nil {

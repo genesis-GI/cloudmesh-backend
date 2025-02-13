@@ -107,7 +107,6 @@ func main() {
 
 
 	r.POST("/motd", func(c *gin.Context) {
-		// Define a struct to match the JSON we expect in the body
 		type MotdRequest struct {
 			Message string `json:"message"`
 		}
@@ -148,10 +147,11 @@ func main() {
 			panic(err)
 		}
 	}
+	
 	r.GET("/ws", wsHandler)
            
 
-	/* color.Magenta("[⚙ Gin Environment]: %s", gin.Mode()) */
+
 	if isLocal{
 		color.Magenta("[⚙ RW Environment]: Local development")
 
