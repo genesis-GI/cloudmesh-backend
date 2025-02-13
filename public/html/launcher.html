@@ -23,17 +23,19 @@
 </body>
 <script>
     function download(){
-        //window.location.href='/';    -> Launcher download link 
-        showNotification("Launcher coming soon!", 'error')
-    }
+        // Launcher download link placeholder 
+        showNotification("Launcher coming soon!", "warning");
+    }  
 
+    // Update showNotification to add the "active" class for visibility
     function showNotification(message, type) {
-        const notification = document.getElementById('notification');
+        const notification = document.getElementById("notification");
         notification.textContent = message;
-        notification.className = `notification ${type}`;
+        notification.className = `notification active ${type}`;
         setTimeout(() => {
             notification.className = "notification hidden";
         }, 3000);
     }
 </script>
+
 </html>

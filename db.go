@@ -133,7 +133,6 @@ func login(req LoginRequest) (bool, string) {
 		return false, "Invalid email or password"
 	}
 
-	color.Cyan("[INFO]: Login successful for email: %s", req.Email)
 	// Login successful
 	return true, "Login successful!"
 }

@@ -12,7 +12,7 @@
   />
   <link rel="stylesheet" href="/css/styles.css">
 </head>
-<body class="construction-border">
+<body>
   <ul class="navbar">
     <li><a href="/">Home</a></li>
     <li><a href="/download/launcher">Download</a></li>
@@ -27,7 +27,6 @@
     <div class="card">
       <button id="editMOTDButton">Edit MOTD</button>
       <h2 id="motdTimestamp">Loading...</h2>
-      <!-- The element with ID 'motdText' is referenced by the variable 'motd' below. -->
       <h1 id="motdText">Loading...</h1>
     </div>
   </div>
@@ -38,39 +37,15 @@
       <span id="closeModal" class="close">&times;</span>
       <h2>Edit MOTD</h2>
       <textarea id="editMOTDInput"></textarea>
-      <div id="markdownNotice">
-        Markdown link example: [Cloudmesh](https://cloudmesh.xyz)
-      </div>
       <button id="saveMOTD">Save</button>
     </div>
   </div>
 
   <script>
-    // References to UI elements
     const notification = document.getElementById('notification');
-    const motd = document.getElementById('motdText');       // Actual MOTD element
+    const motd = document.getElementById('motdText');
     const motdTime = document.getElementById('motdTimestamp');
-    const editModal = document.getElementById('editModal');
-    const editMOTDButton = document.getElementById('editMOTDButton');
-    const closeModal = document.getElementById('closeModal');
-    const editMOTDInput = document.getElementById('editMOTDInput');
-    const saveMOTDButton = document.getElementById('saveMOTD');
-
     let fetchedTimestamp;
-
-    function showNotification(message, type) {
-      notification.textContent = message;
-      notification.classList.add("active");
-      setTimeout(() => {
-        notification.classList.remove("active");
-      }, 3000);
-    }
-
-    // Simple link parser for MarkDown-like links
-    function parseMarkdownLinks(text) {
-      const linkRegex = /\[([^\]]+)\]\(([^)]+)\)/g;
-      return text.replace(linkRegex, '<a href="$2" target="_blank">$1</a>');
-    }
 
     async function fetchMOTD() {
       try {
@@ -79,30 +54,27 @@
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
         const data = await response.json();
+
         const motdText = data.message;
         fetchedTimestamp = data.timestamp;
 
-        // Store raw text so the editor sees the original Markdown
-        motd.dataset.raw = motdText;
-
-        // Parse markdown links for display
-        const parsedMarkdown = parseMarkdownLinks(motdText).replace(/\n/g, '<br>');
-        motd.innerHTML = parsedMarkdown;
-
+        
+//        motd.innerHTML = motdText;
         updateTimeDiff(fetchedTimestamp);
         setInterval(() => updateTimeDiff(fetchedTimestamp), 60000);
       } catch (error) {
         console.error('Failed to fetch MOTD:', error);
         showNotification('Failed to load MOTD', 'error');
+        return null;
       }
     }
 
-    // Displays how long ago the motd was updated
     function updateTimeDiff(timestamp) {      
       const past = new Date(timestamp);
       const now = new Date();
       const diffMs = now - past;
 
+      
       const seconds = Math.floor(diffMs / 1000);
       const minutes = Math.floor(diffMs / 60000);
       const hours   = Math.floor(diffMs / 3600000);
@@ -111,6 +83,7 @@
       const months  = Math.floor(days / 30);   
       const years   = Math.floor(days / 365);  
 
+      
       if (seconds < 60) {
         motdTime.innerHTML = "a few seconds ago";
       } else if (minutes < 60) {
@@ -128,37 +101,47 @@
       }
     }
 
-    // Show the raw markdown in the editor
-    function showRawMotdInModal() {
-      editMOTDInput.value = motd.dataset.raw || motd.innerText;
-      editModal.style.display = 'block';
+
+    function showNotification(message, type) {
+      notification.textContent = message;
+      notification.classList.add("active");
+      setTimeout(() => {
+        notification.classList.remove("active");
+      }, 3000);
     }
 
-    editMOTDButton.addEventListener('click', showRawMotdInModal);
+    const editModal = document.getElementById('editModal');
+    const editMOTDButton = document.getElementById('editMOTDButton');
+    const closeModal = document.getElementById('closeModal');
+    const editMOTDInput = document.getElementById('editMOTDInput');
+    const saveMOTDButton = document.getElementById('saveMOTD');
+
+    editMOTDButton.addEventListener('click', () => {
+      editMOTDInput.value = motd.innerText;
+      editModal.style.display = 'block';
+    });
+
 
     closeModal.addEventListener('click', () => {
       editModal.style.display = 'none';
     });
 
-    // Save new MOTD
+    function parseMarkdownLinks(text) {
+      const linkRegex = /\[([^\]]+)\]\(([^)]+)\)/g;
+      return text.replace(linkRegex, '<a href="$2" target="_blank">$1</a>');
+    }
+
     saveMOTDButton.addEventListener('click', async () => {
       const updatedText = editMOTDInput.value;
       try {
-        const response = await fetch("/motd", {
-          method: 'POST',
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ message: updatedText })
+        const response = await fetch(`/motd/${encodeURIComponent(updatedText)}`, {
+          method: 'POST'
         });
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
-        // Store raw text for future editing
-        motd.dataset.raw = updatedText;
-
-        // Parse and display with links
         const parsedMarkdown = parseMarkdownLinks(updatedText).replace(/\n/g, '<br>');
         motd.innerHTML = parsedMarkdown;
-
         showNotification('MOTD updated successfully!', 'success');
       } catch (err) {
         showNotification('Error updating MOTD', 'error');
@@ -166,40 +149,25 @@
       editModal.style.display = 'none';
     });
 
-    // Dynamically build WebSocket URL
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
     const hostname = window.location.hostname;
     const port = window.location.port ? `:${window.location.port}` : '';
     const wsUrl = `${protocol}//${hostname}${port}/ws`;
     const ws = new WebSocket(wsUrl);
 
-    // Handle new MOTD from WebSocket
     ws.onmessage = (event) => {
-      const [message, timestamp] = event.data.split("!:timeSPLIT:!");
-      // If new content differs from what we have, update it        
-      updateTimeDiff(timestamp);
-      if (motd.dataset.raw !== message) {
-        motd.dataset.raw = message;
-        const parsedMarkdown = parseMarkdownLinks(message).replace(/\n/g, '<br>');
-        motd.innerHTML = parsedMarkdown;
-      }
+      const [first, second] = event.data.split("!:timeSPLIT:!");
+        if(motdText != first){
+          // Convert possible markdown links to clickable links
+          const parsedMarkdown = parseMarkdownLinks(first).replace(/\n/g, '<br>');
+          motdText.innerHTML = parsedMarkdown;
+          updateTimeDiff(second);
+        }
     };
 
     ws.onopen = () => console.log("WebSocket connected!");
     ws.onclose = () => console.log("WebSocket disconnected!");
     ws.onerror = (err) => console.error("WebSocket error:", err);
-
-    // Fetch initial MOTD when the page loads
-    //fetchMOTD();
   </script>
-
-  <style>
-    /* Example dark-gray notice under text area */
-    #markdownNotice {
-      font-size: 0.85rem;
-      color: #888;
-      margin-top: 0.4rem;
-    }
-  </style>
 </body>
 </html>
