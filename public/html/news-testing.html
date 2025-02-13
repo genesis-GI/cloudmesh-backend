@@ -12,7 +12,7 @@
   />
   <link rel="stylesheet" href="/css/styles.css">
 </head>
-<body>
+<body class="construction-border">
   <ul class="navbar">
     <li><a href="/">Home</a></li>
     <li><a href="/download/launcher">Download</a></li>
@@ -176,12 +176,12 @@
     // Handle new MOTD from WebSocket
     ws.onmessage = (event) => {
       const [message, timestamp] = event.data.split("!:timeSPLIT:!");
-      // If new content differs from what we have, update it
+      // If new content differs from what we have, update it        
+      updateTimeDiff(timestamp);
       if (motd.dataset.raw !== message) {
         motd.dataset.raw = message;
         const parsedMarkdown = parseMarkdownLinks(message).replace(/\n/g, '<br>');
         motd.innerHTML = parsedMarkdown;
-        updateTimeDiff(timestamp);
       }
     };
 
@@ -190,7 +190,7 @@
     ws.onerror = (err) => console.error("WebSocket error:", err);
 
     // Fetch initial MOTD when the page loads
-    fetchMOTD();
+    //fetchMOTD();
   </script>
 
   <style>
