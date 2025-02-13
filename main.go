@@ -1,10 +1,10 @@
 package main
 
 import (
-
 	"os"
 
 	"time"
+
 	"github.com/fatih/color"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
@@ -30,6 +30,7 @@ func main() {
 	}else {
 		validToken = "xyz123"
 		color.Cyan("Preview Token: "+validToken)
+		color.Cyan("[main.go debugging INFO]Searched for 'validToken', found:"+rwPreviewToken)
 	}
 
 	getParameters()
