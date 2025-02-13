@@ -73,7 +73,7 @@ func main() {
 		if c.Query("editMOTD") != "true" && isProduction {
 			newsHandler(c)
 		} else {
-			c.File("public/html/news-motd-editable.html")
+			c.File("public/html/news-testing.html")
 		}
 	})
 
