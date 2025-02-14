@@ -134,8 +134,12 @@
     saveMOTDButton.addEventListener('click', async () => {
       const updatedText = editMOTDInput.value;
       try {
-        const response = await fetch(`/motd/${encodeURIComponent(updatedText)}`, {
-          method: 'POST'
+        const response = await fetch("/motd", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ message: updatedText })
         });
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
