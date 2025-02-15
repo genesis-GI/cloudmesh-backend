@@ -58,8 +58,6 @@
         const motdText = data.message;
         fetchedTimestamp = data.timestamp;
 
-        
-//        motd.innerHTML = motdText;
         updateTimeDiff(fetchedTimestamp);
         setInterval(() => updateTimeDiff(fetchedTimestamp), 60000);
       } catch (error) {
