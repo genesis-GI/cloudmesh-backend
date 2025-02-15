@@ -8,19 +8,12 @@ import (
 	"regexp"
 	"strings"
 	"time"
-
 	"github.com/fatih/color"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"golang.org/x/crypto/bcrypt"
 )
-
-func isValidUsername(username string) bool {
-    // Define a regex pattern for valid usernames (e.g., alphanumeric characters)
-    var validUsernamePattern = regexp.MustCompile(`^[a-zA-Z0-9]+$`)
-    return validUsernamePattern.MatchString(username)
-}
 
 var db *mongo.Database
 var client *mongo.Client
@@ -66,47 +59,13 @@ func initDB() error {
 
 
 
-func HashPassword(password string) (string, error){
-	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
-	return string(bytes), err
-}
+/*
 
-func CheckPasswordHash(password, hash string) bool {
-    err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
-    return err == nil
-}
+	Account management
 
-func isValidEmail(email string) bool {
-	emailRegex := `^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`
-	re := regexp.MustCompile(emailRegex)
-	return re.MatchString(email)
-}
+These functions are used to login or register a account
 
-func findByEmail(email string) (bool, string) {
-	if !isValidEmail(email) {
-		log.Println("Invalid email format")
-		return false, ""
-	}
-	filter := bson.M{"email": email}
-
-	var result bson.M
-	err := db.Collection("accounts").FindOne(context.TODO(), filter).Decode(&result)
-	if err == mongo.ErrNoDocuments {
-		return false, ""
-	} else if err != nil {
-		//log.Printf("Error occurred while finding email: %v\n", err)
-		return false, ""
-	}
-
-	jsonData, err := json.Marshal(result)
-	if err != nil {
-		log.Printf("Error converting document to JSON: %v\n", err)
-		return false, ""
-	}
-
-	return true, string(jsonData)
-}
-
+*/
 func login(req LoginRequest) (bool, string) {
 	// Check if email is in a valid format -> No 'SQL' injection
 	if !isValidEmail(req.Email) {
@@ -178,25 +137,14 @@ func register(email, username, password string) (bool, string) {
     return true, "Account registered successfully!"
 }
 
-func findByUsername(username string) (bool, string) {
-    if !isValidUsername(username) {
-        return false, "Invalid username format"
-    }
-    filter := bson.M{"username": username}
-    var result bson.M
-    err := db.Collection("accounts").FindOne(context.TODO(), filter).Decode(&result)
-    if err == mongo.ErrNoDocuments {
-        return false, ""
-    } else if err != nil {
-        return false, ""
-    }
-    jsonData, err := json.Marshal(result)
-    if err != nil {
-        log.Printf("Error converting document to JSON: %v\n", err)
-        return false, ""
-    }
-    return true, string(jsonData)
-}
+
+/* 
+
+	MOTD functions 
+
+These functions are used to set or get the motd from the database.
+
+*/
 
 func setMOTD(text string, currentTime time.Time) (bool, string) {
 	
@@ -235,4 +183,91 @@ func getMOTD() (string, string) {
 
 	// Format the time as a string, for example in RFC3339 format.
 	return result.Text, result.Time.Format(time.RFC3339)
+}
+
+
+/*
+
+	Checking functions
+
+These functions are used to validate user provided information's
+
+*/
+
+func isValidUsername(username string) bool {
+    // Define a regex pattern for valid usernames (e.g., alphanumeric characters)
+    var validUsernamePattern = regexp.MustCompile(`^[a-zA-Z0-9]+$`)
+    return validUsernamePattern.MatchString(username)
+}
+
+
+func HashPassword(password string) (string, error){
+	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
+	return string(bytes), err
+}
+
+func CheckPasswordHash(password, hash string) bool {
+    err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+    return err == nil
+}
+
+func isValidEmail(email string) bool {
+	emailRegex := `^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`
+	re := regexp.MustCompile(emailRegex)
+	return re.MatchString(email)
+}
+
+/*
+
+	Search functions
+
+These functions are used to search for a account
+Either by email or username
+
+*/
+
+func findByEmail(email string) (bool, string) {
+	if !isValidEmail(email) {
+		log.Println("Invalid email format")
+		return false, ""
+	}
+	filter := bson.M{"email": email}
+
+	var result bson.M
+	err := db.Collection("accounts").FindOne(context.TODO(), filter).Decode(&result)
+	if err == mongo.ErrNoDocuments {
+		return false, ""
+	} else if err != nil {
+		//log.Printf("Error occurred while finding email: %v\n", err)
+		return false, ""
+	}
+
+	jsonData, err := json.Marshal(result)
+	if err != nil {
+		log.Printf("Error converting document to JSON: %v\n", err)
+		return false, ""
+	}
+
+	return true, string(jsonData)
+}
+
+
+func findByUsername(username string) (bool, string) {
+    if !isValidUsername(username) {
+        return false, "Invalid username format"
+    }
+    filter := bson.M{"username": username}
+    var result bson.M
+    err := db.Collection("accounts").FindOne(context.TODO(), filter).Decode(&result)
+    if err == mongo.ErrNoDocuments {
+        return false, ""
+    } else if err != nil {
+        return false, ""
+    }
+    jsonData, err := json.Marshal(result)
+    if err != nil {
+        log.Printf("Error converting document to JSON: %v\n", err)
+        return false, ""
+    }
+    return true, string(jsonData)
 }
