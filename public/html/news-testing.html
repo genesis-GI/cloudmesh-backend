@@ -46,6 +46,9 @@
     const motd = document.getElementById('motdText');
     const motdTime = document.getElementById('motdTimestamp');
     let fetchedTimestamp;
+    let rawMotd = "";
+
+    window.addEventListener("DOMContentLoaded", fetchMOTD);
 
     async function fetchMOTD() {
       try {
@@ -55,10 +58,10 @@
         }
         const data = await response.json();
 
-        const motdText = data.message;
+        rawMotd = data.message;
         fetchedTimestamp = data.timestamp;
 
-        updateTimeDiff(fetchedTimestamp);
+        const parsedMarkdown = parseMarkdownLinks(rawMotd).replace(/\n/g, '<br>');
         setInterval(() => updateTimeDiff(fetchedTimestamp), 60000);
       } catch (error) {
         console.error('Failed to fetch MOTD:', error);
@@ -115,7 +118,7 @@
     const saveMOTDButton = document.getElementById('saveMOTD');
 
     editMOTDButton.addEventListener('click', () => {
-      editMOTDInput.value = motd.innerText;
+      editMOTDInput.value = rawMotd;
       editModal.style.display = 'block';
     });
 
@@ -125,7 +128,8 @@
     });
 
     function parseMarkdownLinks(text) {
-      const linkRegex = /\[([^\]]+)\]\(([^)]+)\)/g;
+      // Updated regex allows optional whitespace before '('
+      const linkRegex = /\[([^\]]+)\]\s*\(([^)]+)\)/g;
       return text.replace(linkRegex, '<a href="$2" target="_blank">$1</a>');
     }
 
@@ -142,6 +146,7 @@
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
+        rawMotd = updatedText;
         const parsedMarkdown = parseMarkdownLinks(updatedText).replace(/\n/g, '<br>');
         motd.innerHTML = parsedMarkdown;
         showNotification('MOTD updated successfully!', 'success');
