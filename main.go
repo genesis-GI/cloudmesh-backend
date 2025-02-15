@@ -51,7 +51,7 @@ func main() {
 	{
 		download.GET("/", func(c *gin.Context) {
 			c.JSON(200, gin.H{
-				"!message":          "The index route is unused, use rather: ",
+				"!message":          "The /download route is unused, use rather: ",
 				"Launcher download": "/download/launcher",
 			})
 		})
@@ -70,7 +70,7 @@ func main() {
 	})
 
 	r.GET("/news", func(c *gin.Context) {
-		if c.Query("editMOTD") != "true" && isProduction {
+		if c.Query("editMOTD") != "true" {
 			newsHandler(c)
 		} else {
 			c.File("public/html/news-testing.html")
