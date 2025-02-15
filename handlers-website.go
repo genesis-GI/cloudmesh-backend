@@ -3,6 +3,8 @@ package main
 import (
 	"net/http"
 	"os"
+	"time"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -52,5 +54,14 @@ func infoHandler(c *gin.Context){
 		"Request Protocol": protocol,
 		"Request Body": reqBody,
 		"URL": reqHost + uri,
+	})
+}
+
+func connectionTestHandler(c *gin.Context){
+	start := time.Now()
+	c.JSON(http.StatusOK, gin.H{
+		"message": "OK",
+		"latency": time.Since(start).String(),
+		"serverTS": time.Now().UnixMilli(),
 	})
 }

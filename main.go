@@ -6,16 +6,11 @@ import (
 	"time"
 
 	"github.com/fatih/color"
-	"github.com/gin-contrib/sessions"
-	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
 )
 
 var useRemoteDB bool = true
 var isDbEnabled bool = true
-
-const validToken = "xyz123"
-const sessionKey = "previewToken"
 
 func main() {
 	rwEnv := os.Getenv("RAILWAY_ENVIRONMENT")
@@ -27,13 +22,6 @@ func main() {
 
 	r := gin.Default()
 
-	if !isProduction && !isLocal {
-		store := cookie.NewStore([]byte("dsoifjdsla823495jreio89xpgjgftzftttrertertecjipx9f"))
-		token := getRandomToken()
-		color.Cyan("[ℹ INFO] Session token: " + token)
-		r.Use(sessions.Sessions(token, store))
-		r.Use(tokenSessionMiddleware())
-	}
 
 	r.GET("/css/styles.css", func(c *gin.Context) {
 		c.File("public/css/styles.css")
@@ -43,23 +31,13 @@ func main() {
 		c.String(200, "There is no icon currently!")
 	})
 
+	
+
 	r.GET("/", func(c *gin.Context) {
 		indexHandler(c)
 	})
 
-	download := r.Group("/download")
-	{
-		download.GET("/", func(c *gin.Context) {
-			c.JSON(200, gin.H{
-				"!message":          "The index route is unused, use rather: ",
-				"Launcher download": "/download/launcher",
-			})
-		})
 
-		download.GET("/launcher", func(c *gin.Context) {
-			launcherDownloadHandler(c)
-		})
-	}
 
 	r.GET("/login", func(c *gin.Context) {
 		loginWebsiteHandler(c)
@@ -70,7 +48,7 @@ func main() {
 	})
 
 	r.GET("/news", func(c *gin.Context) {
-		if c.Query("editMOTD") != "true" && isProduction {
+		if c.Query("editMOTD") != "true" && isProduction{
 			newsHandler(c)
 		} else {
 			c.File("public/html/news-testing.html")
@@ -85,9 +63,6 @@ func main() {
 		POSTregisterHandler(c)
 	})
 
-	r.GET("/connection/info", func(c *gin.Context) {
-		infoHandler(c)
-	})
 
 	r.GET("/versions/:email/:game", func(c *gin.Context) {
 		if isDbEnabled {
@@ -126,6 +101,32 @@ func main() {
 		})
 	})
 
+
+	download := r.Group("/download")
+	{
+		download.GET("/", func(c *gin.Context) {
+			c.JSON(200, gin.H{
+				"!message":          "The /download route is unused, use rather: ",
+				"Launcher download": "/download/launcher",
+			})
+		})
+
+		download.GET("/launcher", func(c *gin.Context) {
+			launcherDownloadHandler(c)
+		})
+	}
+
+	connection := r.Group("/connection")
+	{
+		connection.GET("/info", func(c *gin.Context) {
+			infoHandler(c)
+		})
+		connection.GET("/test", connectionTestHandler)
+	}
+
+
+	r.GET("/ws", wsHandler)
+
 	r.NoRoute(func(c *gin.Context) {
 		noRouteHandler(c)
 	})
@@ -137,7 +138,7 @@ func main() {
 		}
 	}
 
-	r.GET("/ws", wsHandler)
+	
 
 	if isLocal {
 		color.Magenta("[⚙ RW Environment]: Local development")
