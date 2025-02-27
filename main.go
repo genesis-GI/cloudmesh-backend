@@ -31,12 +31,10 @@ func main() {
 		c.String(200, "There is no icon currently!")
 	})
 
-	
 
 	r.GET("/", func(c *gin.Context) {
 		indexHandler(c)
 	})
-
 
 
 	r.GET("/login", func(c *gin.Context) {
