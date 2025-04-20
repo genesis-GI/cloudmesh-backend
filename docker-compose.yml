@@ -1,0 +1,18 @@
+services:
+  cloudmesh-backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8088:8088"
+    restart: unless-stopped
+    environment:
+      - RAILWAY_ENVIRONMENT=development
+    networks:
+      - cloudmesh-network
+    volumes:
+      - ./public:/app/public
+
+networks:
+  cloudmesh-network:
+    driver: bridge
