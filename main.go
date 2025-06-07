@@ -13,6 +13,7 @@ var useRemoteDB bool = true
 var isDbEnabled bool = true
 
 func main() {
+	os.Setenv("RAILWAY_ENVIRONMENT", "production")
 	rwEnv := os.Getenv("RAILWAY_ENVIRONMENT")
 	isProduction := rwEnv == "production"
 	isLocal := rwEnv == ""

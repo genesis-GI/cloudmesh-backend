@@ -26,9 +26,9 @@ func initDB() error {
 
 	if !useRemoteDB {
 
-		clientOptions = options.Client().ApplyURI("mongodb://localhost:27017")
+		clientOptions = options.Client().ApplyURI("mongodb://192.168.0.67:27017")
 	}else{
-		clientOptions = options.Client().ApplyURI("mongodb://81.10.229.31:38128")
+		clientOptions = options.Client().ApplyURI("mongodb://192.168.0.67:27017")
 	}
 
 	var err error
